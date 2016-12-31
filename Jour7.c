@@ -4,7 +4,7 @@
 
 #define INPUT_NAME "input7"
 
-int supprot_tls(char *line, int r)
+int support_tls(char *line, int r)
 {
 	int i = 0;
 	char *p = line;
@@ -35,6 +35,46 @@ int supprot_tls(char *line, int r)
 	return ret;
 }
 
+int support_ssl(char *line, int r)
+{
+	int i = 0, j;
+	char *p = line;
+	char a = 0;
+	int in_bracket = 0;
+	int supernet = 0, s[1000];
+	int hypernet = 0, h[1000];
+
+	for (i=0; i<r-1; i++, p++) {
+		switch (*p) {
+		case '[':
+			in_bracket = 1;
+			break;
+		case ']':
+			in_bracket = 0;
+			break;
+		default:
+			if (*(p+1) == a && a!=*p) {
+				if (in_bracket) {
+					h[hypernet] = (*p << 8) + a;
+					hypernet++;
+				}
+				else {
+					s[supernet] = (a << 8) + *p;
+					supernet++;
+				}
+			}
+		}
+		a = *p;
+	}
+
+	for (i=0; i<supernet; i++)
+		for (j=0; j<hypernet; j++)
+			if (s[i] == h[j])
+				return 1;
+
+	return 0;
+}
+
 int main()
 {
 	int i, r;
@@ -55,12 +95,22 @@ int main()
 			r--;
 		}
 
-		if (supprot_tls(line, r)) {
+#if 0
+		if (support_tls(line, r)) {
 			printf("line '%s' support TLS\n", line);
 			count++;
 		}
 		else
 			printf("line '%s' does not support TLS\n", line);
+#else
+		if (support_ssl(line, r)) {
+			printf("line '%s' support SSL\n", line);
+			count++;
+		}
+		else
+			printf("line '%s' does not support SSL\n", line);
+#endif
+
 		linecnt++;
 	}
 
