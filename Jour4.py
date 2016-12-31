@@ -2,7 +2,7 @@
 from collections import Counter
 import re
 
-r = re.compile("([a-z-]+)([0-9]+)\[([a-z]+)\]")
+r = re.compile("([a-z-]+)-([0-9]+)\[([a-z]+)\]")
 
 def extract(s):
     global r
@@ -17,6 +17,18 @@ def is_valid_room(name, h):
     #print test_h
     return test_h == h
 
+def real_name(name, sid):
+    s = ""
+    for c in name:
+        if c == '-':
+            s += c
+        else:
+            c = ord(c) - ord('a')
+            c = (c + sid) % 26
+            c = chr(c + ord('a'))
+            s += c
+    return s
+
 with open('input4') as f:
     c = 0
     for l in f:
@@ -26,5 +38,6 @@ with open('input4') as f:
         name, sid, h = extract(l)
         if is_valid_room(name.translate(None, '-'), h):
             c += int(sid)
+        print real_name(name, int(sid)), sid
     print c
 
