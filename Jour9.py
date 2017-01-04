@@ -4,6 +4,13 @@ input9 = "LGOFNEIZBERESE(15x10)WREHFFHTWBHRRRU(53x15)(8x13)ZSLUBGUV(2x10)BP(6x8)
 import re
 re_comp = re.compile("\((\d+)x(\d+)\)")
 
+
+def decompress_v2(compress):
+    d = compress
+    while "(" in d:
+        d = decompress(d)
+    return d
+
 def decompress(compress):
     d = ""
     s = compress
@@ -21,3 +28,22 @@ def decompress(compress):
     return d
 
 print len(decompress(input9))
+
+
+def decompress_size(compress):
+    size = 0
+    s = compress
+    while True:
+        m = re_comp.search(s)
+        if m is None:
+            size += len(s)
+            break
+        size += len(s[:m.start()])
+        l = int(m.group(1))
+        c = int(m.group(2))
+        sub_s = s[m.end():m.end()+l]
+        size += decompress_size(sub_s) * c
+        s = s[m.end()+l:]
+    return size
+
+print decompress_size(input9)
