@@ -31,6 +31,6 @@
 
 (jour1 'filtre-demitour
  (with-temp-buffer
-   (insert-file-contents-literally "input1_2")
+   (insert-file-contents-literally "input1")
    (buffer-substring (point-min) (point-max))))
 1076

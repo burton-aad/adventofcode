@@ -1,0 +1,56 @@
+
+
+;; circular list
+(defun make-clist (elemts)
+  (let ((r (copy-tree elemts)))
+    (setcdr (last r) r)))
+
+(defun distribute (len lst)
+  (let* ((val (car lst))
+	(n (/ val len))
+	(h (% val len))
+	(l (cdr lst)))
+    (setcar lst 0)
+    (dotimes (x h)
+      (setcar l (+ (car l) n 1))
+      (setq l (cdr l)))
+    (dotimes (x (- len h))
+      (setcar l (+ (car l) n))
+      (setq l (cdr l)))))
+
+(defun sig (len lst)
+  (let ((l (seq-subseq lst 0 len)))
+    (concat (mapc 'number-to-string l))))
+
+(defun max (len lst)
+  (let ((m lst)
+	(l (cdr lst)))
+    (dotimes (x len m)
+      (when (> (car l) (car m))
+	(setq m l))
+      (setq l (cdr l)))))
+
+(defun jour6 (input)
+  (let* ((len (length input))
+	 (lst (make-clist input))
+	 (ref (cons (sig len lst) nil))
+	 rpos)
+    ;; (print lst)
+    (while (not rpos)
+      (let ((m (max len lst)))
+	(distribute len m)
+	;; (print lst)
+	(let ((s (sig len lst)))
+	  ;; (message s)
+	  (setq rpos (seq-position ref s))
+	  (push s ref))))
+    `(,(+ 1 rpos) ,(- (length ref) 1))))
+
+(setq input '(0 2 7 0))
+(setq input6 '(0 5 10 0 11 14 13 4 11 8 8 7 1 4 12 11))
+
+(jour6 input)
+(4 5)
+
+(jour6 input6)
+(1695 7864)
