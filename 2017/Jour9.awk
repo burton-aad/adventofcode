@@ -1,6 +1,6 @@
 #!/usr/bin/awk -f
 
-BEGIN { RS="<(!!|[^>!]|![^!])*>"; FPAT="[{}]"; }
+BEGIN { RS="<([^>!]|!.)*>"; FPAT="[{}]"; }
 
 {
 	# print "NR " NR " : " $0
