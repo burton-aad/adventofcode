@@ -29,6 +29,9 @@ class regs:
     def dec(self, x):
         self.regs[x] -= 1
 
+    def out(self, x):
+        print(self.get(x))
+
     def jnz(self, x, y, p):
         if self.get(x) != 0:
             return self.get(y)
@@ -82,6 +85,8 @@ class regs:
             self.dec(l[1])
         elif l[0] == "jnz":
             return self.jnz(l[1], l[2], p)
+        elif l[0] == "out":
+            self.out(l[1])
         elif l[0] == "tgl":
             self.tgl(l[1], p)
         return 1
@@ -118,15 +123,16 @@ class regs:
                 continue
 
 
-with open("input23") as f:
-    prog = map(lambda x: x.strip(), f.readlines())
-    print(repr(prog))
+if __name__ == "__main__":
+    with open("input23") as f:
+        prog = map(lambda x: x.strip(), f.readlines())
+        print(repr(prog))
 
-r = regs(prog, a=7)
-r.run()
-print(r)
+    r = regs(prog, a=7)
+    r.run()
+    print(r)
 
-r = regs(prog, a=12)
-r.run()
-print(r)
+    r = regs(prog, a=12)
+    r.run()
+    print(r)
 
