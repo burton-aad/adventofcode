@@ -1,6 +1,8 @@
 #!/bin/bash
 ":"; exec emacs --no-site-file --script "$0" -- "$@" # -*-emacs-lisp-*-
 
+(require 'seq)
+
 (defun loop10 (eltnum input round)
   (let* ((l (number-sequence 0 (1- eltnum)))
          (d (last l))
@@ -30,6 +32,16 @@
         ;; (message (format "in %d -> l %S (skip %d, m %d)" i l skip m))
         (setq skip (1+ skip))))))
 
+(defun knot-hash (input-s)
+  "return list of number"
+  (let* ((n 256)
+         (suffix '(17 31 73 47 23))
+         (input (append (mapcar #'string-to-char (split-string input-s "" t "\n*")) suffix))
+         (l (loop10 n input 64))
+         dense)
+    (dolist (i (number-sequence 0 (1- n) 16) (nreverse dense))
+      (push (apply 'logxor (seq-subseq l i (+ 16 i))) dense))))
+
 (defun jour10 (n file)
   (let ((input-s (with-temp-buffer
                    (insert-file-contents-literally file)
@@ -40,15 +52,9 @@
       (message (format "rep 1 -> %d" (* (car l) (cadr l)))))
 
     ;; partie 2
-    (let* ((suffix '(17 31 73 47 23))
-           (input (append (mapcar #'string-to-char (split-string input-s "" t "\n*")) suffix))
-           (l (loop10 n input 64))
-           dense)
+    (let ((hash (knot-hash input-s)))
       (mapconcat #'identity
-                 (mapcar (lambda (x) (format "%02x" x))
-                         (dolist (i (number-sequence 0 (1- n) 16) (nreverse dense))
-                           (push (apply 'logxor (seq-subseq l i (+ 16 i))) dense)))
-                 ""))))
+                 (mapcar (lambda (x) (format "%02x" x)) hash) ""))))
 
 
 ;; (jour10 256 "input10")
