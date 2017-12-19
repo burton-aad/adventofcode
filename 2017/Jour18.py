@@ -59,15 +59,19 @@ class Prog:
     def mod(self, x, y):
         self.regs[x] = self.regs[x] % self.get(y)
 
+    def rcv_mirror_val(self, x):
+        self.pipe.append(x)
+        if self.state == Prog.STATE_STUCK:
+            self.state = Prog.STATE_RUN
+
     def snd(self, x):
-        self.mirror_prog.pipe.append(self.get(x))
+        self.mirror_prog.rcv_mirror_val(self.get(x))
         self.snd_cnt += 1
 
     def rcv(self, x):
         if len(self.pipe) == 0:
             self.state = Prog.STATE_STUCK
-            return
-        self.state = Prog.STATE_RUN
+            return 0
         if self.recv_cnt == 0:
             print("Case 1: Prog {} recv {}".format(self.pid, self.pipe[-1]))
         self.regs[x] = self.pipe.pop(0)
@@ -78,19 +82,18 @@ class Prog:
             return self.get(y)
 
     def parse(self, l):
-        return getattr(self, l[0])(*l[1:]) or 1
+        r = getattr(self, l[0])(*l[1:])
+        return r if r is not None else 1
 
-    def run(self):
-        if self.state == Prog.STATE_END:
-            return
+    def run(self, num_inst=1):
         p = self.pc
-        print_v("{}: {}".format(self.pid, " ".join(self.inst[p])))
-        p += self.parse(self.inst[p])
-        if self.state == Prog.STATE_STUCK:
-            return # do not update pc
-        if not (0 <= p < len(self.inst)):
-            print_v("End prog {}". format(self.pid))
-            self.state = Prog.STATE_END
+        while self.is_running() and num_inst > 0:
+            print_v("{}: {}".format(self.pid, " ".join(self.inst[p])))
+            p += self.parse(self.inst[p])
+            if not (0 <= p < len(self.inst)):
+                print_v("End prog {}". format(self.pid))
+                self.state = Prog.STATE_END
+            num_inst -= 1
         self.pc = p
         print_v(self)
 
