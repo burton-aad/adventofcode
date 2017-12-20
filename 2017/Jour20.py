@@ -6,7 +6,8 @@ from pprint import pprint
 import re
 import sys
 
-sign = lambda x: x and (1, -1)[x < 0]
+# function compatible pour 2 et 3
+mapl = lambda *x: list(map(*x))
 
 class Particule:
     def __init__(self, index=-1, pos=[0,0,0], v=[0,0,0], a=[0,0,0]):
@@ -17,14 +18,14 @@ class Particule:
 
     def from_desc(self, line):
         p, v, a = re.findall("-?\d[-\d,]*", line)
-        self.pos = map(int, p.split(","))
-        self.v = map(int, v.split(","))
-        self.a = map(int, a.split(","))
+        self.pos = mapl(int, p.split(","))
+        self.v = mapl(int, v.split(","))
+        self.a = mapl(int, a.split(","))
         return self
 
     def update(self):
-        self.v = map(sum, zip(self.v, self.a))
-        self.pos = map(sum, zip(self.pos, self.v))
+        self.v = mapl(sum, zip(self.v, self.a))
+        self.pos = mapl(sum, zip(self.pos, self.v))
 
     def dist(self):
         return sum(map(abs, self.pos))
@@ -59,8 +60,8 @@ def test():
         print(parts)
         # map(lambda (x,y): print("{} -> {}".format(x, y.dist()), end=" "), enumerate(parts))
         # print()
-        map(Particule.update, parts)
-    map(lambda (x,y): print("{} -> {}".format(x, y.dist())), enumerate(parts))
+        mapl(Particule.update, parts)
+    mapl(lambda t: print("{} -> {}".format(t[0], t[1].dist())), enumerate(parts))
 
 def jour20(filename):
     with open(filename) as f:
@@ -72,7 +73,7 @@ def jour20(filename):
     print("Cas 1: closest index {} -> {}".format(p.index, p.dist()))
 
     for i in range(150):
-        map(Particule.update, parts)
+        mapl(Particule.update, parts)
         d = search_duplicate(parts)
         if len(d) != 0:
             # print("loop", i)
