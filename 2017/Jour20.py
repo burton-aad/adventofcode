@@ -1,7 +1,6 @@
 #!/usr/bin/python
 
 from __future__ import print_function
-from operator import sub
 from pprint import pprint
 import re
 import sys
@@ -36,16 +35,18 @@ class Particule:
     def __eq__(self, other):
         return self.pos[0] == other.pos[0] and self.pos[1] == other.pos[1] and self.pos[2] == other.pos[2]
 
-def search_duplicate(parts):
-    t = []
+    def __hash__(self):
+        return hash(tuple(self.pos))
+
+def search_and_remove_duplicate(parts):
+    t = set()
     d = {}
     for p in parts:
-        if p.pos in t:
-            l = tuple(p.pos)
-            d[l] = d.get(l, 1) + 1
+        if p in t:
+            d[p] = d.get(p, 1) + 1
         else:
-            t.append(p.pos)
-    return d
+            t.add(p)
+    return list(t - set(d))
 
 def test():
     text = ["p=<-6,0,0>, v=< 3,0,0>, a=< 0,0,0>",
@@ -57,6 +58,7 @@ def test():
         parts.append(Particule(i).from_desc(l))
     for i in range(4):
         print("loop", i)
+        parts = search_and_remove_duplicate(parts)
         print(parts)
         # map(lambda (x,y): print("{} -> {}".format(x, y.dist()), end=" "), enumerate(parts))
         # print()
@@ -74,13 +76,7 @@ def jour20(filename):
 
     for i in range(150):
         mapl(Particule.update, parts)
-        d = search_duplicate(parts)
-        if len(d) != 0:
-            # print("loop", i)
-            for p in d:
-                # print("remove {} collision at pos {}".format(d[p], p))
-                for _ in range(d[p]):
-                    parts.remove(Particule(pos=p))
+        parts = search_and_remove_duplicate(parts)
     print()
     print("Cas 2:", len(parts))
     # pprint(parts)
