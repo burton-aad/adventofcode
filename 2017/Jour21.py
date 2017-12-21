@@ -1,8 +1,9 @@
 #!/usr/bin/python
 
 from __future__ import print_function
+import sys
 from pprint import pprint
-from operator import and_
+from operator import and_, add
 
 class Block:
     def __init__(self, t):
@@ -26,6 +27,8 @@ class Block:
         else:
             raise(Exception("invalid description line {}".format(l)))
 
+    def nop(self):
+        pass
 
     def flip_h(self):
         self.t = self.t[::-1]
@@ -44,8 +47,14 @@ class Block:
         self.rotate180()
         self.rotate90()
 
+    def count(self):
+        return sum([x == '#' for t in self.t for x in t])
+
     def __repr__(self):
         return "Block({})".format("/".join("".join(x) for x in self.t))
+
+    def __len__(self):
+        return len(self.t)
 
     def __eq__(self, other):
         return reduce(and_, [s == o for l in [zip(x,y) for x,y in zip(self.t, other.t)] for s,o in l])
@@ -53,61 +62,64 @@ class Block:
     def __hash__(self):
         return hash(tuple(self.t))
 
+def test():
+    print("\n".join("1234/5678/90ab/cdef".split("/")))
+    b = Block.from_line(".#./..#/###")[0]
+    c = Block.from_line("#../#.#/##.")[0]
+    # d = Block.from_line("#..#/..../..../#..#")
+    d = Block.from_line("1234/5678/90ab/cdef")
+    print("b {}: {}".format(len(b), b))
+    print(b.count())
+    print("c {}: {}".format(len(c), c))
+    print(c.count())
+    print("d {}: {}".format(len(d[0]), d[0]))
+
+    c.rotate270()
+    print(c)
+    print(hash(b))
+    print(hash(c))
+    print([(s,o) for l in [zip(x,y) for x,y in zip(b.t, c.t)] for s,o in l])
+    print(b == c)
 
 
+start_image = ".#./..#/###"
 
-start_image = ".#./..#/###".split("/")
-print()
-print("\n".join(start_image))
-print(len(start_image))
+def find_replace(block, dic):
+    for f in [Block.nop, Block.flip_h, Block.flip_v]:
+        f(block)
+        for g in [Block.rotate90] * 4:
+            g(block)
+            if block in dic:
+                print(block)
+                return dic[block]
+        f(block)
+    raise(Exception("Something is wrong here"))
 
-def divide_in_block(image):
-    t = []
-    if len(image) % 2 == 0:
-        d = 2
-    elif len(image) % 3 == 0:
-        d = 3
+def jour21(filename, loop=3):
+    d = {}
+    with open(filename) as f:
+        for l in f:
+            k,v = l.strip().split(" => ")
+            d[Block.from_line(k)[0]] = Block.from_line(v)
+    # pprint(d)
+    lb = [Block.from_line(start_image)[0]]
+    for _ in range(loop):
+        nl = []
+        for b in lb:
+            nl.extend(find_replace(b, d))
+        lb = nl
+    print("lb {} : {}".format(len(lb), lb))
+    print(list(map(len, lb)))
+    print(list(map(Block.count, lb)))
+    print(sum(map(Block.count, lb)))
 
-    for i in range(0, len(image), d):
-        l = []
-        for j in range(0, len(image), d):
-            m = []
-            for k in range(d):
-                m.append(image[i+k][j:j+d])
-            l.append(m)
-        t.append(l)
-    return t
-
-
-print(divide_in_block(["#..#", "....", "....", "#..#"]))
-print(divide_in_block(start_image))
-
-start_image = ".#./..#/###".split("/")
-print(hash(tuple(start_image)))
-d = tuple(tuple(x) for x in start_image)
-print(d)
-print(hash(d))
-
-print(d[::-1])
-print(zip(*start_image[::-1]))
-print(zip(*zip(*start_image)[::-1]))
-
-print("\n".join("1234/5678/90ab/cdef".split("/")))
-b = Block.from_line(".#./..#/###")[0]
-c = Block.from_line("#../#.#/##.")[0]
-# d = Block.from_line("#..#/..../..../#..#")
-d = Block.from_line("1234/5678/90ab/cdef")
-print("b:", b)
-print("c:", c)
-print("d:", d)
-
-c.rotate270()
-print(c)
-print(hash(b))
-print(hash(c))
-print([(s,o) for l in [zip(x,y) for x,y in zip(b.t, c.t)] for s,o in l])
-print(b == c)
-
-
-img = list("#..#/..../..../#..#".split("/"))
-
+if __name__=="__main__":
+    fname = "input21"
+    if len(sys.argv) > 1:
+        fname = sys.argv[1]
+    # test()
+    jour21(fname, 1)
+    jour21(fname, 2)
+    jour21(fname, 3)
+    # jour21(fname, 4)
+    # jour21(fname, 5)
