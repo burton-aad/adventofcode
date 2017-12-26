@@ -25,10 +25,14 @@ class Bridge:
 
     def next(self, G):
         r = []
-        for i,j in G - set(self.pts):
-            if i == self.pos or j == self.pos:
+        s = [(i,j) for i,j in G - set(self.pts) if i == self.pos or j == self.pos]
+        for i,v in enumerate(s):
+            if i == len(s) - 1:
+                self.set_next_point(*v)
+                r.append(self)
+            else:
                 b = self.copy()
-                b.set_next_point(i, j)
+                b.set_next_point(*v)
                 r.append(b)
         return r
 
