@@ -176,13 +176,14 @@ c = 126300
 h = nombre de nombre non premier entre b et c (inclus) par palier de 17
 
 #+BEGIN_SRC python
+  import math
   a = 1
   b = 109300
   c = 126300
   h = 0
   for b in range(b, c+1, 17):
       # simplification 2 et 3
-      for d in range(2, b):
+      for d in range(2, int(math.sqrt(b))):
           if b % d == 0:
               h += 1
               break
