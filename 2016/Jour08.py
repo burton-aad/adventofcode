@@ -1,4 +1,5 @@
 
+import sys
 import re
 
 WIDTH = 50
@@ -39,26 +40,31 @@ def rotate_column(a,b):
 # rotate_row(0, 4)
 # rotate_column(1, 1)
 
-with open("input8") as f:
-    for l in f:
-        m = re_rect.match(l)
-        if m:
-            rect(*map(int, m.groups()))
-            continue
-        m = re_rrow.match(l)
-        if m:
-            rotate_row(*map(int, m.groups()))
-            continue
-        m = re_rcol.match(l)
-        if m:
-            rotate_column(*map(int, m.groups()))
-            continue
-        print "Error in line", l
+if __name__=="__main__":
+    fname = "input08"
+    if len(sys.argv) > 1:
+        fname = sys.argv[1]
 
-print
-print_screen(screen)
+    with open(fname) as f:
+        for l in f:
+            m = re_rect.match(l)
+            if m:
+                rect(*map(int, m.groups()))
+                continue
+            m = re_rrow.match(l)
+            if m:
+                rotate_row(*map(int, m.groups()))
+                continue
+            m = re_rcol.match(l)
+            if m:
+                rotate_column(*map(int, m.groups()))
+                continue
+            print "Error in line", l
 
-c = 0
-for l in screen:
-    c += l.count('#')
-print c
+    print
+    print_screen(screen)
+
+    c = 0
+    for l in screen:
+        c += l.count('#')
+    print c
