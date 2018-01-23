@@ -37,8 +37,8 @@ jnz 1 -21
 
 ** Extra func
 
-add x y   -> x = x + y
-mul x y z -> x = x + y*z
+- add x y   -> x = x + y
+- mul x y z -> x = x + y*z
 
 ** Analyse
 
