@@ -1,5 +1,6 @@
 #!/usr/bin/python
 
+import sys
 
 class scrambler:
     def __init__(self, word):
@@ -87,26 +88,31 @@ class scrambler:
             self.move(int(l[2]), int(l[5]))
 
 
-with open("input21") as f:
-    process = f.readlines()
+if __name__ == "__main__":
+    fname = "input21"
+    if len(sys.argv) > 1:
+        fname = sys.argv[1]
 
-# sc = scrambler("abcde")
-# print sc
-sc = scrambler("abcdefgh")
+    with open(fname) as f:
+        process = f.readlines()
 
-for l in process:
-    # print l.strip()
-    sc.parse(l)
+    # sc = scrambler("abcde")
     # print sc
+    sc = scrambler("abcdefgh")
 
-print sc.word, "->", sc
+    for l in process:
+        # print l.strip()
+        sc.parse(l)
+        # print sc
+
+    print sc.word, "->", sc
 
 
-sc = scrambler("fbgdceah")
+    sc = scrambler("fbgdceah")
 
-for l in reversed(process):
-    # print l.strip()
-    sc.parse_reverse(l)
-    # print sc
+    for l in reversed(process):
+        # print l.strip()
+        sc.parse_reverse(l)
+        # print sc
 
-print sc
+    print sc

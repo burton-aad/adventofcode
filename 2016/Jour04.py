@@ -29,7 +29,7 @@ def real_name(name, sid):
             s += c
     return s
 
-with open('input4') as f:
+with open('input04') as f:
     c = 0
     for l in f:
         l = l.strip()
@@ -38,6 +38,7 @@ with open('input4') as f:
         name, sid, h = extract(l)
         if is_valid_room(name.translate(None, '-'), h):
             c += int(sid)
+        # grep north on output
         print real_name(name, int(sid)), sid
     print c
 

@@ -14,7 +14,7 @@ def parse_keys(l, k, i, h):
         elif ls*5 in h:
             # valid
             k.append((li, ls, i))
-            print "key", li, "validate with hash", i
+            # print "key", li, "validate with hash", i
         else:
             # keep it in the list
             r.append((li,ls))
@@ -45,10 +45,11 @@ def h2(s, i):
 salt = "jlmsuwbz" # input
 
 # part 1
-# k = get_keys(salt)
+k = get_keys(salt)
+print "end k", k
+print "Cas 1: 64 ->", k[63]
+
 # part 2
 k = get_keys(salt, h2)
-k.sort(key=lambda x : x[0])
-
 print "end k", k
-print "64 ->", k[63]
+print "Cas 2: 64 ->", k[63]
