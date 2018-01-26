@@ -2,10 +2,10 @@
 
 BEGIN { FS="[-xyT[:blank:]]*" }
 
-NR < 10 {
-	print
-	print $2, $3, $4, $5, $6
-}
+# NR < 10 {
+# 	print
+# 	print $2, $3, $4, $5, $6
+# }
 
 NR > 2 {
 	Size = $4
@@ -63,7 +63,7 @@ function print_grid(a,    x,y,t)
 
 END {
 	print length(a) * length(a[0])
-	print num_v
+	print "part 1 : " num_v
 
 	print_grid(a)
 

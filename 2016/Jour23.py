@@ -94,7 +94,7 @@ class regs:
     def __repr__(self):
         return str(self.regs)
 
-    def run(self):
+    def run(self, O=True):
         p = 0
         f_limit = 6
         f = []
@@ -109,18 +109,19 @@ class regs:
                 f.pop(0)
             p += self.parse(self.inst[p], p)
 
-            # optimise on the fly
-            # double loop
-            m = dloop.match("!".join(f))
-            if m:
-                p += self.mul_loop(m)
-                continue
+            if O:
+                # optimise on the fly
+                # double loop
+                m = dloop.match("!".join(f))
+                if m:
+                    p += self.mul_loop(m)
+                    continue
 
-            # simple loop
-            m = sloop.match("!".join(f[-3:]))
-            if m :
-                p += self.add_loop(m)
-                continue
+                # simple loop
+                m = sloop.match("!".join(f[-3:]))
+                if m :
+                    p += self.add_loop(m)
+                    continue
 
 
 if __name__ == "__main__":

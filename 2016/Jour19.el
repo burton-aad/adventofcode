@@ -28,7 +28,7 @@
   (let* ((len input)
 	(l (seq-mapn #'cons (number-sequence 1 input) (make-list input 1)))
 	(s (nthcdr (1- (/ len 2)) l)))
-    (setcdr (nthcdr (1- input) l) l)
+    (setcdr (last l) l)
     (while (> len 1)
       (let ((e (car l))
 	    (next (cadr s)))
