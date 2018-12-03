@@ -6,6 +6,8 @@
 #include <algorithm>
 #include <vector>
 
+#include "../enumerate.h"
+
 template<class T, class U>
 bool find_val(const std::unordered_map<T, U>& m, const U val)
 {
@@ -22,6 +24,41 @@ std::string diff_s(std::string& s, std::string& t)
 	return r;
 }
 
+std::string diff_s2(std::string& s, std::string& t)
+{
+	std::string r;
+	auto t_it = t.begin();
+	for (auto it : enumerate(t_it, s)) {
+		if (it == *t_it)
+			r.push_back(it);
+	}
+	return r;
+}
+
+
+template<class T, class U>
+void print_map(const std::unordered_map<T, U>& m)
+{
+	std::cout << "test m : {";
+	for (auto it : enumerate(m)) {
+		if (std::get<0>(it) > 0)  std::cout << ", ";
+		std::cout << std::get<1>(it).first << ": " << std::get<1>(it).second;
+	}
+	std::cout << "}" << std::endl;
+}
+
+template<class T, class U>
+void print_map2(const std::unordered_map<T, U>& m)
+{
+	std::cout << "test m : {";
+	size_t i = 0;
+	for (auto it : enumerate(i, m)) {
+		if (i > 0)  std::cout << ", ";
+		std::cout << it.first << ": " << it.second;
+	}
+	std::cout << "}" << std::endl;
+}
+
 void jour2(std::ifstream& in)
 {
 	std::string s;
@@ -35,6 +72,9 @@ void jour2(std::ifstream& in)
 			m[c]++;
 		dbl += find_val(m, 2);
 		tpl += find_val(m, 3);
+
+		// print_map(m);
+		// print_map2(m);
 
 		for (auto vs : v) {
 			auto d = diff_s(vs, s);
