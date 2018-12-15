@@ -20,22 +20,6 @@ class Guard:
     def wakes_up(self, min):
         self._status[min] = WAKEUP
 
-    def sleep(t):
-        while t >=0 and self._status[t] == UNKNOWN:
-            t -= 1
-        return self._status[t] == SLEEP if t >= 0 else False
-
-    def time_sleep(self):
-        a = 0
-        r = 0
-        for c in self._status:
-            if c == SLEEP:
-                a = 1
-            elif c == WAKEUP:
-                a = 0
-            r += a
-        return r
-
     def status(self):
         s = WAKEUP
         r = []
@@ -82,18 +66,17 @@ def jour04(shifts):
     sleep = {}
     for g in shifts.values():
         if g.id not in sleep:
-            sleep[g.id] = 0
-        sleep[g.id] += g.time_sleep()
-    grd = max(sleep.items(), key=lambda x : x[1])
-    print grd
-    most_sleep = [0] * 60
-    for k,g in filter(lambda x: x[1].id == grd[0], shifts.items()):
-        s = map(lambda x: x == SLEEP, g.status())
-        most_sleep = map(add, most_sleep, s)
-    m = most_sleep.index(max(most_sleep))
-    print m
-    print "part 1: guard {}, min {} -> {}".format(grd[0], m, int(grd[0]) * m)
-        
+            sleep[g.id] = [0]*60
+        sleep[g.id] = map(add, sleep[g.id], map(lambda x: x == SLEEP, g.status()))
+    # print sleep
+
+    grd1,slp1 = max(sleep.items(), key=lambda x : sum(x[1]))
+    m1 = slp1.index(max(slp1))
+    print "part 1: guard {}, min {} -> {}".format(grd1, m1, int(grd1) * m1)
+
+    grd2,slp2 = max(sleep.items(), key=lambda x: max(x[1]))
+    m2 = slp2.index(max(slp2))
+    print "part 2: guard {}, min {} -> {}".format(grd2, m2, int(grd2) * m2)
 
 
 def main(infile = "input04"):
