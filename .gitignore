@@ -1,4 +1,7 @@
 *.o
 *.exe
+
+# Rust
 Cargo.lock
 target/
+*.pdb
