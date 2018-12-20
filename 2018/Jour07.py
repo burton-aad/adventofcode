@@ -9,7 +9,7 @@ class Node:
         self.id = id
         self.parent = []
         self.child = []
-        self.wait = 0
+        self.reset()
 
     def set_child(self, node):
         self.child.append(node)
@@ -17,7 +17,10 @@ class Node:
         node.wait+=1
 
     def reset(self):
-        self.wait = len(node.parent)
+        self.wait = len(self.parent)
+        self.time = ord(self.id) - ord('@') + 60
+        for n in self.child:
+            n.reset()
 
     def str(self):
         return "{} -> {}".format(self.id, self.child)
@@ -30,26 +33,45 @@ class Node:
         return ord(self.id)
 
 
-def run_largeur_sort(roots):
-    c = sorted(roots, key=lambda x: x.id, reverse=True)
-    r = []
-    while len(c) > 0:
-        n = c.pop()
-        if n.wait > 1:
-            n.wait -= 1
+def run_largeur_sort(roots, workers=1):
+    queue = sorted(roots, key=lambda x: x.id, reverse=True)
+    run = []
+    end = []
+    time = 0
+    while len(queue) > 0 or len(run) > 0:
+        # print("queue {}, run {}, workers {}, time {}".format(queue, run, workers, time))
+        if len(queue) > 0 and workers > 0:
+            n = queue.pop()
+            if n.wait > 1:
+                n.wait -= 1
+            else:
+                run.append(n)
+                workers -= 1
         else:
-            r.append(n.id)
-            c.extend(n.child)
-            c.sort(key=lambda x: x.id, reverse=True)
-    return r
+            # wait workers
+            n = min(run, key=lambda n: n.time)
+            run.remove(n)
+            end.append(n.id)
+            workers += 1
+            time += n.time
+            for o in run:
+                o.time -= n.time
+            queue.extend(n.child)
+            queue.sort(key=lambda x: x.id, reverse=True)
+    return end, time
 
 
 def jour07(roots):
-    print("part 1:", "".join(run_largeur_sort(roots)))
+    n_order, _ = run_largeur_sort(roots)
+    print("part 1:", "".join(n_order))
+    for n in roots:
+        n.reset()
+
+    _, time = run_largeur_sort(roots, 5)
+    print("part 2: {} secs".format(time))
 
 
-# if __name__ == "__main__":
-if True:
+if __name__ == "__main__":
     input = "input07"
     if len(sys.argv) > 1:
         input = sys.argv[1]
