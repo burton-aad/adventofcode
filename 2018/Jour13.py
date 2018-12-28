@@ -3,7 +3,6 @@
 from __future__ import print_function
 import sys
 from operator import attrgetter
-import itertools
 
 class Cart:
     UP = 0
@@ -103,7 +102,7 @@ def jour13(f):
 if __name__ == "__main__":
     input = "input13"
     if len(sys.argv) > 1:
-        input = int(sys.argv[1])
+        input = sys.argv[1]
     with open(input) as f:
         jour13(f)
 
