@@ -4,6 +4,7 @@
 from __future__ import print_function
 import sys
 from collections import deque
+from copy import copy
 
 
 def vois4(p):
@@ -18,23 +19,55 @@ def readOrderCmp(x, y):
         return i
 
 
-def print_map_debug(mp, plyrs, pos, r):
-    for j,l in enumerate(mp):
-        t = []
-        tl = []
-        for i,c in enumerate(l):
-            if (i,j) in plyrs:
-                t.append(plyrs[(i,j)].ptype)
-                tl.append(plyrs[(i,j)].plife())
-            elif (i,j) in pos and (i,j) in r:
-                t.append('J')
-            elif (i,j) in pos:
-                t.append('O')
-            elif (i,j) in r:
-                t.append('X')
-            else:
-                t.append('.' if c else '#')
-        print("".join(t), ", ".join(tl))
+class Game:
+    def __init__(self, carte, players):
+        "players is the list of players"
+        self.carte = carte
+        self.players = {}
+        for p in players:
+            self.players[p] = copy(p)
+        self.full_round = 0
+        self.fini = False
+
+    def finish(self):
+        if not self.fini:
+            it = self.players.itervalues()
+            pl = next(it)
+            self.fini = True
+            for p in it:
+                if pl.ptype != p.ptype:
+                    self.fini = False
+                    break
+        return self.fini
+
+    def print_map(self):
+        for j,l in enumerate(self.carte):
+            t = []
+            tl = []
+            for i,c in enumerate(l):
+                if (i,j) in self.players:
+                    t.append(self.players[(i,j)].ptype)
+                    tl.append(self.players[(i,j)].plife())
+                else:
+                    t.append('.' if c else '#')
+            print("".join(t), ", ".join(tl))
+
+    def play_round(self):
+        "return True if something change in the map (players have moved or died)"
+        mv = False
+        for p in sorted(self.players.values()):
+            if self.finish():
+                # current round does not end completely
+                return mv
+            if p.hp <= 0:
+                # died from other attack
+                continue
+            self.players.pop(p)
+            mv |= p.move(self.carte, self.players)
+            self.players[p] = p
+            mv |= p.attack(self.players)
+        self.full_round += 1
+        return mv
 
 
 
@@ -46,11 +79,9 @@ class PNJ:
         self.ptype = ptype
 
     def move(self, carte, players):
-        # print("move", self)
+        "return True if the player move"
         q = [] # liste à faire
         qr = [] # prochaine liste
-        found = []
-        r = set([self.pos])
 
         # check if opponent in range
         for v in vois4(self.pos):
@@ -61,25 +92,18 @@ class PNJ:
             elif carte[v[1]][v[0]]:
                 q.append((v, v))
 
+        # search accessible opponent
         # q is list of (first move, actual position)
+        found = [] # will be filled with nearest targets
+        r = set([self.pos]) # position already visited
         while not found and len(q) > 0:
-            # print(len(q), ":", q)
-            # print(r)
-            # print_map_debug(carte, players, [x[1] for x in q], r)
             for p in q:
                 move, cur = p
-                # print(cur)
-                # if cur in r:
-                #     print("cur in r")
-                #     continue
                 r.add(cur)
                 for v in vois4(cur):
-                    # print("vois", v, "->", carte[v[1]][v[0]])
                     if v in r:
-                        # print("in r")
                         pass
                     elif v in players:
-                        # print("in players")
                         if players[v].ptype != self.ptype:
                             found.append((move, cur))
                     elif carte[v[1]][v[0]]:
@@ -87,18 +111,25 @@ class PNJ:
                         r.add(v)
             q = sorted(qr, cmp=readOrderCmp, key=lambda x: x[1])
             qr = []
-        # print(found)
         if found:
-            self.pos, _ = sorted(found, cmp=readOrderCmp, key=lambda x: x[1])[0]
+            found.sort(cmp=readOrderCmp, key=lambda x: x[1])
+            # print(self, "move to", found[0][0])
+            self.pos = found[0][0]
             return True
         return False
 
     def attack(self, players):
+        "return True if an opponent die with this attack"
         p = sorted(filter(lambda x: x and x.ptype != self.ptype, map(players.get, vois4(self.pos))), key=lambda x: x.hp)
+        # print(self, "attack", p)
         if len(p) > 0:
             p[0].hp -= self.ap
             if p[0].hp <= 0:
-                players.pop(p[0].pos)
+                # an ennemy died
+                # print(p[0], "have died from", self)
+                players.pop(p[0])
+                return True
+        return False
 
     def plife(self):
         "return string with player hp"
@@ -117,72 +148,37 @@ class PNJ:
         return hash(self.pos)
 
 
-def print_map(mp, plyrs):
-    for j,l in enumerate(mp):
-        t = []
-        tl = []
-        for i,c in enumerate(l):
-            if (i,j) in plyrs:
-                t.append(plyrs[(i,j)].ptype)
-                tl.append(plyrs[(i,j)].plife())
-            else:
-                t.append('.' if c else '#')
-        print("".join(t), ", ".join(tl))
-
-
-def finnish(players):
-    it = players.itervalues()
-    pl = next(it)
-    for p in it:
-        if pl.ptype != p.ptype:
-            return False
-    return True
-
 
 def parse_input(f):
     mp = []
-    players = {}
+    players = []
     for j,l in enumerate(f):
         t = []
         for i,c in enumerate(l.strip()):
             t.append(c != '#')
             if c == 'G' or c == 'E':
-                players[(i,j)] = PNJ(c, (i,j))
+                players.append(PNJ(c, (i,j)))
         mp.append(t)
     return mp, players
 
 
-def jour15(f, limit=-1):
+def jour15(f, limit=-1, debug=False):
     # parse input
     mp, players = parse_input(f)
-    print(players)
-    print(sorted(players.values()))
+    game = Game(mp, players)
+    print(game.players)
     print("test:", len(players))
-    print_map(mp, players)
-    rnd = 0
-    l = len(players)
-    while not finnish(players) and rnd != limit:
-        rnd += 1
-        mv = False
-        for p in sorted(players.values()):
-            if finnish(players):
-                rnd -= 1
-                break
-            if p not in players:
-                continue
-            players.pop(p)
-            mv |= p.move(mp, players)
-            p.attack(players)
-            players[p] = p
-            # print_map(mp, players)
-        if mv or len(players) < l:
-            l = len(players)
+    game.print_map()
+    while not game.finish() and game.full_round != limit:
+        mv_or_die = game.play_round()
+        if debug and mv_or_die:
             print()
-            print("round", rnd)
-            print_map(mp, players)
-    # print("round", rnd)
-    # print_map(mp, players)
-    print("Part 1:", rnd * sum(map(lambda x:x.hp, players.values())))
+            print("round", game.full_round)
+            game.print_map()
+    print()
+    print("round", game.full_round)
+    game.print_map()
+    print("Part 1:", game.full_round * sum(map(lambda x:x.hp, game.players.values())))
 
 
 if __name__ == "__main__":
@@ -202,6 +198,7 @@ input5 = ["#######", "#.E...#", "#.#..G#", "#.###.#", "#E#G#G#", "#...#G#", "###
 input6 = ["#########", "#G......#", "#.E.#...#", "#..##..G#", "#...##..#", "#...#...#", "#.G...G.#", "#.....G.#", "#########"]
 
 input_test = ["##########", "#...#...E#", "#...G....#", "#E..#....#", "##########"]
+input_test2 = ["#######", "#E..G.#", "#...#.#", "#.G.#G#", "#######"]
 
-# jour15(input_test, 1)
-# jour15(input6)
+# jour15(input_test2, 1)
+# jour15(input1, 1, debug=True)
