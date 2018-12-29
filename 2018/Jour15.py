@@ -4,7 +4,6 @@
 from __future__ import print_function
 import sys
 from collections import deque
-from copy import copy
 
 
 def vois4(p):
@@ -25,9 +24,13 @@ class Game:
         self.carte = carte
         self.players = {}
         for p in players:
-            self.players[p] = copy(p)
+            self.players[p] = p.copy()
         self.full_round = 0
         self.fini = False
+
+    def extra_elfes_power(self, inc):
+        for p in filter(lambda x: x.ptype == 'E', self.players.values()):
+            p.ap += inc
 
     def finish(self):
         if not self.fini:
@@ -77,6 +80,9 @@ class PNJ:
         self.ap = ap
         self.hp = hp
         self.ptype = ptype
+
+    def copy(self):
+        return PNJ(self.ptype, self.pos, self.hp, self.ap)
 
     def move(self, carte, players):
         "return True if the player move"
@@ -165,20 +171,38 @@ def parse_input(f):
 def jour15(f, limit=-1, debug=False):
     # parse input
     mp, players = parse_input(f)
+
+    # Part 1
     game = Game(mp, players)
-    print(game.players)
-    print("test:", len(players))
-    game.print_map()
+    # print("players", len(players), ":", game.players)
+    # game.print_map() # initial position
     while not game.finish() and game.full_round != limit:
         mv_or_die = game.play_round()
         if debug and mv_or_die:
-            print()
             print("round", game.full_round)
             game.print_map()
-    print()
     print("round", game.full_round)
-    game.print_map()
+    # game.print_map() # end position
     print("Part 1:", game.full_round * sum(map(lambda x:x.hp, game.players.values())))
+
+    # Part 2
+    num_elfes = len(filter(lambda x: x.ptype == 'E', players))
+    inc_power = 0
+    while True:
+        inc_power += 1
+        game = Game(mp, players)
+        game.extra_elfes_power(inc_power)
+        while not game.finish():
+            mv_or_die = game.play_round()
+            if debug and mv_or_die:
+                print("round", game.full_round)
+                game.print_map()
+        n = len(filter(lambda x: x.ptype == 'E', game.players.values()))
+        print("with {} power, {}/{} elfes stay alive".format(3+inc_power, n, num_elfes))
+        if n == num_elfes:
+            print("Part 2:", game.full_round * sum(map(lambda x:x.hp, game.players.values())))
+            break
+
 
 
 if __name__ == "__main__":
@@ -201,4 +225,4 @@ input_test = ["##########", "#...#...E#", "#...G....#", "#E..#....#", "#########
 input_test2 = ["#######", "#E..G.#", "#...#.#", "#.G.#G#", "#######"]
 
 # jour15(input_test2, 1)
-# jour15(input1, 1, debug=True)
+# jour15(input6, debug=False)
