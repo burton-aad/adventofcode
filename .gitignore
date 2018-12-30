@@ -1,6 +1,12 @@
 *.o
 *.exe
 
+# python
+*.pyc
+
+# elisp
+*.elc
+
 # Rust
 Cargo.lock
 target/
