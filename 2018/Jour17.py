@@ -133,7 +133,7 @@ def jour17(f, debug=False):
     print("-"*100)
     print2D(detect)
     print("Part 1:", water_count(detect, [FALLING_WATER, WATER]))
-    print("Part 1:", water_count(detect, [WATER]))
+    print("Part 2:", water_count(detect, [WATER]))
 
 
 if __name__ == "__main__":
