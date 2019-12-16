@@ -2,49 +2,8 @@
 
 from __future__ import print_function
 import sys
-from enum import IntEnum
 import itertools
-
-class Intcode(object):
-    class Opcode(IntEnum):
-        Add = 1
-        Mul = 2
-        End = 99
-
-    def __init__(self, prog):
-        self.reset(prog)
-        self.op = {
-            Intcode.Opcode.Add : self.add,
-            Intcode.Opcode.Mul : self.mul,
-            Intcode.Opcode.End : self.end
-        }
-
-    def reset(self, prog):
-        self.prog = prog[:]
-        self.pc = 0
-
-    def init(self, noun, verb):
-        self.prog[1] = noun
-        self.prog[2] = verb
-
-    def run(self):
-        while self.pc < len(self.prog):
-            self.pc += self.op[self.prog[self.pc]](*self.prog[self.pc+1:])
-
-    def add(self, *args):
-        self.prog[args[2]] = self.prog[args[1]] + self.prog[args[0]]
-        return 4
-
-    def mul(self, *args):
-        self.prog[args[2]] = self.prog[args[1]] * self.prog[args[0]]
-        return 4
-
-    def end(self, *args):
-        return len(self.prog) # this end the program
-
-    def __str__(self):
-        return str(self.prog)
-
+from intcomp import Intcode
 
 def main(v):
     p = Intcode(v)
@@ -56,7 +15,7 @@ def main(v):
     # seek for specific value
     target = 19690720
     for i, j in itertools.product(range(100), repeat=2):
-        p.reset(v)
+        p.reset()
         p.init(i, j)
         p.run()
         if p.prog[0] == target:
