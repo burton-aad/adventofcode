@@ -18,15 +18,12 @@ def Jour09(transmit, preambule=25):
 
     invalid = i
     i, j = 0,2
-    while True:
-        s = sum(transmit[i:j])
-        if s == invalid:
-            print("Part 2:", min(transmit[i:j]) + max(transmit[i:j]))
-            break
-        elif s < invalid:
+    while (s := sum(transmit[i:j])) != invalid:
+        if s < invalid:
             j += 1
         else:
             i += 1
+    print("Part 2:", min(transmit[i:j]) + max(transmit[i:j]))
 
 
 if __name__=="__main__":
