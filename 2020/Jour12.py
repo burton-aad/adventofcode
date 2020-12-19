@@ -2,62 +2,54 @@
 
 import sys
 
+class C:
+    def __init__(self, r, i):
+        self.c = complex(r, i)
+
+    def man_dist(self):
+        return int(abs(self.c.real) + abs(self.c.imag))
+
+    def move(self, c):
+        self.c += c
+
+    def turn(self, direction, num):
+        # 90 degrees turn, direction 1 for right and -1 for left
+        for _ in range(num):
+            self.c = complex(direction * self.c.imag, -direction * self.c.real)
 
 def Jour12_1(insts):
-    pos = complex(0,0)
-    def move(v):
-        nonlocal pos
-        pos += v
-
-    face = 'E'
-    direction = ['N', 'E', 'S', 'W']
-    def turn(degree):
-        nonlocal face
-        face = direction[(direction.index(face) + degree // 90 + 4) % 4]
-
+    pos = C(0, 0)
+    face = C(1, 0) # face east by default
     action = {
-        'N' : lambda x: move(complex(0, 1) * x),
-        'S' : lambda x: move(complex(0, -1) * x),
-        'E' : lambda x: move(complex(1, 0) * x),
-        'W' : lambda x: move(complex(-1, 0) * x),
-        'F' : lambda x: action[face](x),
-        'L' : lambda x: turn(-x),
-        'R' : lambda x: turn(x),
+        'N' : lambda x: pos.move(complex(0, 1) * x),
+        'S' : lambda x: pos.move(complex(0, -1) * x),
+        'E' : lambda x: pos.move(complex(1, 0) * x),
+        'W' : lambda x: pos.move(complex(-1, 0) * x),
+        'F' : lambda x: pos.move(face.c * x),
+        'L' : lambda x: face.turn(-1, x // 90),
+        'R' : lambda x: face.turn(1, x // 90),
     }
 
     for i, v in insts:
         action[i](v)
-    print("Part 1 :", abs(pos.real) + abs(pos.imag))
+    print("Part 1 :", pos.man_dist())
 
 def Jour12_2(insts):
-    pos = complex(0,0)
-    def move(v):
-        nonlocal pos
-        pos += v
-
-    waypoint = complex(10, 1)
-    def move_w(v):
-        nonlocal waypoint
-        waypoint += v
-
-    def turn(d, degree):
-        nonlocal waypoint
-        for _ in range(degree // 90):
-            waypoint = complex(d * waypoint.imag, -d * waypoint.real)
-
+    pos = C(0, 0)
+    waypoint = C(10, 1)
     action = {
-        'N' : lambda x: move_w(complex(0, 1) * x),
-        'S' : lambda x: move_w(complex(0, -1) * x),
-        'E' : lambda x: move_w(complex(1, 0) * x),
-        'W' : lambda x: move_w(complex(-1, 0) * x),
-        'F' : lambda x: move(waypoint * x),
-        'L' : lambda x: turn(-1, x),
-        'R' : lambda x: turn(1, x),
+        'N' : lambda x: waypoint.move(complex(0, 1) * x),
+        'S' : lambda x: waypoint.move(complex(0, -1) * x),
+        'E' : lambda x: waypoint.move(complex(1, 0) * x),
+        'W' : lambda x: waypoint.move(complex(-1, 0) * x),
+        'F' : lambda x: pos.move(waypoint.c * x),
+        'L' : lambda x: waypoint.turn(-1, x // 90),
+        'R' : lambda x: waypoint.turn(1, x // 90),
     }
 
     for i, v in insts:
         action[i](v)
-    print("Part 1 :", abs(pos.real) + abs(pos.imag))
+    print("Part 2 :", pos.man_dist())
 
 
 if __name__=="__main__":
