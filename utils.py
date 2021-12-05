@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 from __future__ import print_function
+from itertools import zip_longest, tee
 
 
 infinity = 1000000000 # 1000000000 est (espérons le) l'infini
@@ -49,3 +50,19 @@ def dijkstra(G, s):
                 P[v] = r
         # print(D)
     return D, P
+
+def grouper(iterable, n, fillvalue=None):
+    "Collect data into non-overlapping fixed-length chunks or blocks"
+    # grouper('ABCDEFG', 3, 'x') --> ABC DEF Gxx
+    args = [iter(iterable)] * n
+    return zip_longest(*args, fillvalue=fillvalue)
+
+def sliding_window(iterable, n):
+    "Get data through a sliding window of size n"
+    # sliding_window('ABCDEFG', 3) --> ABC BCD CDE DEF EFG
+    b, r = iterable, []
+    for _ in range(n):
+        a, b = tee(b)
+        next(b, None)
+        r.append(a)
+    return zip(*r)
