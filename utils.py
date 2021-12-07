@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 from __future__ import print_function
-from itertools import zip_longest, tee
+from itertools import zip_longest, tee, filterfalse
 
 
 infinity = 1000000000 # 1000000000 est (espérons le) l'infini
@@ -66,3 +66,9 @@ def sliding_window(iterable, n):
         next(b, None)
         r.append(a)
     return zip(*r)
+
+def partition(pred, iterable):
+    "Use a predicate to partition entries into false entries and true entries"
+    # partition(is_odd, range(10)) --> 1 3 5 7 9  and  0 2 4 6 8
+    t1, t2 = tee(iterable)
+    return filter(pred, t1), filterfalse(pred, t2)
