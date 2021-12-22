@@ -23,6 +23,13 @@ impl Node {
     }
 }
 
+impl PartialEq for Node {
+    fn eq(&self, other: &Self) -> bool {
+        self.name == other.name
+    }
+}
+impl Eq for Node {}
+
 #[derive(Default, Debug)]
 struct Graph {
     nodes: Vec<Node>,
@@ -80,7 +87,9 @@ impl Graph {
         GraphIterPath {
             graph: &self,
             one_double: one_double,
-            paths: vec![vec![self.start]].into_iter().collect::<VecDeque<_>>(),
+            paths: vec![vec![&self.nodes[self.start]]]
+                .into_iter()
+                .collect::<VecDeque<_>>(),
         }
     }
 }
@@ -89,40 +98,46 @@ impl Graph {
 struct GraphIterPath<'a> {
     graph: &'a Graph,
     one_double: bool,
-    paths: VecDeque<Vec<usize>>,
+    paths: VecDeque<Vec<&'a Node>>,
 }
 
 impl<'a> Iterator for GraphIterPath<'a> {
     type Item = Vec<&'a String>;
 
     fn next(&mut self) -> Option<Self::Item> {
-        let mut r = None;
+        while let Some(mut p) = self.paths.pop_front() {
+            let graph = &self.graph; // Avoid borrowing the graph in the lambdas
+            let cur_n = p.last().unwrap();
+            let one_double = self.one_double;
 
-        while !self.paths.is_empty() && r.is_none() {
-            let p = self.paths.pop_front().unwrap();
-            let n = &self.graph.nodes[*p.last().unwrap()];
-            for s in n.links.iter() {
+            for s in cur_n
+                .links
+                .iter()
+                .filter(|&&l| l != graph.start && l != graph.end)
+                .map(|&l| &graph.nodes[l])
+                .filter(|n| {
+                    n.reuse
+                        || (one_double
+                            && p.iter()
+                                .filter(|&&v| !v.reuse)
+                                .counts_by(|v| &v.name)
+                                .values()
+                                .all(|&c| c == 1))
+                        || !p.contains(&n)
+                })
+            {
                 let mut c = p.clone();
-                c.push(*s);
-                if *s == self.graph.start {
-                    continue;
-                } else if *s == self.graph.end {
-                    r = Some(c.iter().map(|&i| &self.graph.nodes[i].name).collect());
-                } else if self.graph.nodes[*s].reuse
-                    || (self.one_double
-                        && p.iter()
-                            .filter(|&&v| !self.graph.nodes[v].reuse)
-                            .counts()
-                            .values()
-                            .all(|&c| c == 1))
-                    || !p.contains(s)
-                {
-                    self.paths.push_back(c);
-                }
+                c.push(s);
+                self.paths.push_back(c);
+            }
+
+            if cur_n.links.contains(&graph.end) {
+                p.push(&graph.nodes[graph.end]);
+                return Some(p.iter().map(|&n| &n.name).collect());
             }
         }
 
-        r
+        None
     }
 }
 
