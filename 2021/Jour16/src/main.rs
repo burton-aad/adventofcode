@@ -1,6 +1,8 @@
 #![allow(non_snake_case)]
 
 use itertools::Itertools;
+use num_derive::FromPrimitive;
+use num_traits::FromPrimitive;
 use std::io::{BufRead, BufReader};
 use std::{env, fs};
 
@@ -12,10 +14,22 @@ enum PacketValue {
     Operator { subs: Vec<Packet> },
 }
 
+#[derive(Debug, FromPrimitive)]
+enum PacketId {
+    Sum,
+    Product,
+    Minimum,
+    Maximum,
+    Literal,
+    GreaterThan,
+    LessThan,
+    EqualTo,
+}
+
 #[derive(Debug)]
 struct Packet {
     version: u8,
-    id: u8,
+    id: PacketId,
     val: PacketValue,
 }
 
@@ -48,9 +62,9 @@ impl Packet {
 
     fn parse_bits(bits: &mut bits::Bits) -> Packet {
         let version = bits.take(3) as u8;
-        let id = bits.take(3) as u8;
+        let id: PacketId = FromPrimitive::from_usize(bits.take(3)).unwrap();
         match id {
-            4 => Packet {
+            PacketId::Literal => Packet {
                 version: version,
                 id: id,
                 val: PacketValue::Literal(Packet::parse_literal(bits)),
@@ -73,19 +87,19 @@ impl Packet {
         match &self.val {
             PacketValue::Literal(v) => *v,
             PacketValue::Operator { subs: v } => match self.id {
-                0 => v.iter().map(|p| p.calc()).sum::<usize>(),
-                1 => v.iter().map(|p| p.calc()).product::<usize>(),
-                2 => v.iter().map(|p| p.calc()).min().unwrap(),
-                3 => v.iter().map(|p| p.calc()).max().unwrap(),
-                5 => {
+                PacketId::Sum => v.iter().map(|p| p.calc()).sum::<usize>(),
+                PacketId::Product => v.iter().map(|p| p.calc()).product::<usize>(),
+                PacketId::Minimum => v.iter().map(|p| p.calc()).min().unwrap(),
+                PacketId::Maximum => v.iter().map(|p| p.calc()).max().unwrap(),
+                PacketId::GreaterThan => {
                     assert!(v.len() == 2);
                     (v[0].calc() > v[1].calc()) as usize
                 }
-                6 => {
+                PacketId::LessThan => {
                     assert!(v.len() == 2);
                     (v[0].calc() < v[1].calc()) as usize
                 }
-                7 => {
+                PacketId::EqualTo => {
                     assert!(v.len() == 2);
                     (v[0].calc() == v[1].calc()) as usize
                 }
