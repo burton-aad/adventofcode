@@ -36,3 +36,12 @@ func Sum(arr []int) (sum int) {
 	}
 	return
 }
+
+func All(arr []bool) bool {
+	for _, value := range arr {
+		if !value {
+			return false
+		}
+	}
+	return true
+}
