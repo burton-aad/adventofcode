@@ -66,3 +66,34 @@ func IndexOf[T comparable](arr []T, val T) int {
 	}
 	return -1
 }
+
+var exists = struct{}{}
+
+type Set[T comparable] struct {
+	m map[T]struct{}
+}
+
+func (s *Set[T]) Add(vals ...T) {
+	for _, val := range vals {
+		s.m[val] = exists
+	}
+}
+
+func (s *Set[T]) Remove(val T) {
+	delete(s.m, val)
+}
+
+func (s *Set[T]) Contains(val T) bool {
+	_, c := s.m[val]
+	return c
+}
+
+func (s *Set[T]) Len() int {
+	return len(s.m)
+}
+
+func NewSet[T comparable]() *Set[T] {
+	s := &Set[T]{}
+	s.m = make(map[T]struct{})
+	return s
+}
