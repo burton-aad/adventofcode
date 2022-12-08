@@ -41,6 +41,16 @@ func Sum[T Number](arr []T) (sum T) {
 	return
 }
 
+func Max[T Number](arr []T) T {
+	m := arr[0]
+	for i := 0; i < len(arr); i++ {
+		if arr[i] > m {
+			m = arr[i]
+		}
+	}
+	return m
+}
+
 func B2i(b bool) int {
 	if b {
 		return 1
