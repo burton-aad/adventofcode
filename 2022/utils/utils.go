@@ -31,7 +31,11 @@ func Map[T any, M any](a []T, f func(T) M) []M {
 }
 
 type Number interface {
-	int | uint8
+	Signed | uint8
+}
+
+type Signed interface {
+	int | int8
 }
 
 func Sum[T Number](arr []T) (sum T) {
@@ -49,6 +53,22 @@ func Max[T Number](arr []T) T {
 		}
 	}
 	return m
+}
+
+func Abs[T Number](v T) T {
+	if v >= 0 {
+		return v
+	} else {
+		return -v
+	}
+}
+
+func Sign[T Signed](v T) T {
+	if v >= 0 {
+		return T(1)
+	} else {
+		return T(-1)
+	}
 }
 
 func B2i(b bool) int {
