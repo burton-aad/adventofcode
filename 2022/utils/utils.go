@@ -45,6 +45,14 @@ func Sum[T Number](arr []T) (sum T) {
 	return
 }
 
+func Prod[T Number](arr []T) (p T) {
+	p = 1
+	for _, value := range arr {
+		p *= value
+	}
+	return
+}
+
 func Max[T Number](arr []T) T {
 	m := arr[0]
 	for i := 0; i < len(arr); i++ {
