@@ -22,6 +22,10 @@ func ReadFileLines(path string) (s []string) {
 	return
 }
 
+////////////////////////////////////////////////////////
+// Functional utils
+////////////////////////////////////////////////////////
+
 func Map[T any, M any](a []T, f func(T) M) []M {
 	n := make([]M, 0, len(a))
 	for _, e := range a {
@@ -105,6 +109,10 @@ func IndexOf[T comparable](arr []T, val T) int {
 	return -1
 }
 
+////////////////////////////////////////////////////////
+// Set
+////////////////////////////////////////////////////////
+
 var exists = struct{}{}
 
 type Set[T comparable] struct {
@@ -134,4 +142,46 @@ func NewSet[T comparable]() *Set[T] {
 	s := &Set[T]{}
 	s.m = make(map[T]struct{})
 	return s
+}
+
+////////////////////////////////////////////////////////
+// Queue
+////////////////////////////////////////////////////////
+
+type Queue[T any] struct {
+	s []T
+}
+
+func (queue *Queue[T]) Push(val T) {
+	// push back
+	queue.s = append(queue.s, val)
+}
+
+func (q *Queue[T]) Front() T {
+	return q.s[0]
+}
+
+func (q *Queue[T]) Back() T {
+	return q.s[len(q.s)-1]
+}
+
+func (q *Queue[T]) Pop() (r T) {
+	// pop front
+	r = q.Front()
+	q.s = q.s[1:]
+	return
+}
+
+func (q *Queue[T]) PopBack() (r T) {
+	r = q.Back()
+	q.s = q.s[:len(q.s)-1]
+	return
+}
+
+func (q *Queue[T]) Size() int {
+	return len(q.s)
+}
+
+func (q *Queue[T]) Empty() bool {
+	return len(q.s) == 0
 }
