@@ -22,6 +22,35 @@ func ReadFileLines(path string) (s []string) {
 	return
 }
 
+func MakeSlice[T any](size int, value T) []T {
+	r := make([]T, size)
+	for i := range r {
+		r[i] = value
+	}
+	return r
+}
+
+func MinMax[T Number](m T, marr ...T) (min T, max T) {
+	min, max = m, m
+	for i := range marr {
+		if marr[i] > max {
+			max = marr[i]
+		} else if marr[i] < min {
+			min = marr[i]
+		}
+	}
+	return
+}
+
+func IndexOf[T comparable](arr []T, val T) int {
+	for i, v := range arr {
+		if v == val {
+			return i
+		}
+	}
+	return -1
+}
+
 ////////////////////////////////////////////////////////
 // Functional utils
 ////////////////////////////////////////////////////////
@@ -57,7 +86,7 @@ func Prod[T Number](arr []T) (p T) {
 	return
 }
 
-func Max[T Number](arr []T) T {
+func AMax[T Number](arr []T) T {
 	m := arr[0]
 	for i := 0; i < len(arr); i++ {
 		if arr[i] > m {
@@ -98,15 +127,6 @@ func All(arr []bool) bool {
 		}
 	}
 	return true
-}
-
-func IndexOf[T comparable](arr []T, val T) int {
-	for i, v := range arr {
-		if v == val {
-			return i
-		}
-	}
-	return -1
 }
 
 ////////////////////////////////////////////////////////

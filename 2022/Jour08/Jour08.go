@@ -107,8 +107,8 @@ func main() {
 		}))
 	})))
 
-	fmt.Println("Part 2: ", utils.Max(utils.Map(forest.trees, func(tline []Tree) int {
-		return utils.Max(utils.Map(tline, func(t Tree) int {
+	fmt.Println("Part 2: ", utils.AMax(utils.Map(forest.trees, func(tline []Tree) int {
+		return utils.AMax(utils.Map(tline, func(t Tree) int {
 			return t.scenic_score()
 		}))
 	})))
