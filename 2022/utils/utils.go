@@ -51,6 +51,19 @@ func IndexOf[T comparable](arr []T, val T) int {
 	return -1
 }
 
+func Remove[T any](arr []T, i int) []T {
+	return append(arr[:i], arr[i+1:]...)
+}
+
+func Insert[T any](arr []T, i int, value T) []T {
+	if i == len(arr) {
+		return append(arr, value)
+	}
+	arr = append(arr[:i+1], arr[i:]...)
+	arr[i] = value
+	return arr
+}
+
 ////////////////////////////////////////////////////////
 // Functional utils
 ////////////////////////////////////////////////////////
@@ -94,6 +107,20 @@ func AMax[T Number](arr []T) T {
 		}
 	}
 	return m
+}
+
+func AMin[T Number](arr []T) T {
+	m := arr[0]
+	for i := 0; i < len(arr); i++ {
+		if arr[i] < m {
+			m = arr[i]
+		}
+	}
+	return m
+}
+
+func AMinMax[T Number](arr []T) (T, T) {
+	return MinMax(arr[0], arr...)
 }
 
 func Abs[T Number](v T) T {
