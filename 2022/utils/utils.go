@@ -65,6 +65,12 @@ func Remove[T any](arr []T, i int) []T {
 	return append(arr[:i], arr[i+1:]...)
 }
 
+func RemoveCopy[T any](arr []T, i int) []T {
+	var a []T
+	a = append(a, arr[:i]...)
+	return append(a, arr[i+1:]...)
+}
+
 func Insert[T any](arr []T, i int, value T) []T {
 	if i == len(arr) {
 		return append(arr, value)
@@ -236,9 +242,9 @@ type Queue[T any] struct {
 	s []T
 }
 
-func (queue *Queue[T]) Push(val T) {
+func (queue *Queue[T]) Push(val ...T) {
 	// push back
-	queue.s = append(queue.s, val)
+	queue.s = append(queue.s, val...)
 }
 
 func (q *Queue[T]) Front() T {
