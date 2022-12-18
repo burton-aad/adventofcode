@@ -2,6 +2,7 @@ package utils
 
 import (
 	"bufio"
+	"math/bits"
 	"os"
 )
 
@@ -28,6 +29,16 @@ func MakeSlice[T any](size int, value T) []T {
 		r[i] = value
 	}
 	return r
+}
+
+func Min[T Number](m T, marr ...T) (min T) {
+	min = m
+	for i := range marr {
+		if marr[i] < min {
+			min = marr[i]
+		}
+	}
+	return
 }
 
 func Max[T Number](m T, marr ...T) (max T) {
@@ -170,6 +181,33 @@ func All(arr []bool) bool {
 		}
 	}
 	return true
+}
+
+func Combinations(length int, n int) <-chan []int {
+	ch := make(chan []int)
+
+	if n == 0 || n > length {
+		close(ch)
+		return ch
+	}
+
+	go func() {
+		for subsetBits := 1; subsetBits < (1 << length); subsetBits++ {
+			if n > 0 && bits.OnesCount(uint(subsetBits)) != n {
+				continue
+			}
+
+			var subset []int
+			for i := 0; i < length; i++ {
+				if (subsetBits>>i)&1 == 1 {
+					subset = append(subset, i)
+				}
+			}
+			ch <- subset
+		}
+		close(ch)
+	}()
+	return ch
 }
 
 ////////////////////////////////////////////////////////
