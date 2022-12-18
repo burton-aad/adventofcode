@@ -30,6 +30,16 @@ func MakeSlice[T any](size int, value T) []T {
 	return r
 }
 
+func Max[T Number](m T, marr ...T) (max T) {
+	max = m
+	for i := range marr {
+		if marr[i] > max {
+			max = marr[i]
+		}
+	}
+	return
+}
+
 func MinMax[T Number](m T, marr ...T) (min T, max T) {
 	min, max = m, m
 	for i := range marr {
