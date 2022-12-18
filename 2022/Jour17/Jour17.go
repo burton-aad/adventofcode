@@ -99,9 +99,38 @@ func (s *Screen) fall() bool {
 			s.height = utils.Max(s.height, s.falling.y+p.y+1)
 			s.rocks.Add(Pos{s.falling.xmin + p.x, s.falling.y + p.y})
 		}
-		s.falling = Piece{}
+		s.falling = Piece{} // reset falling piece
 		return false
 	}
+}
+
+func (s *Screen) floor_shape() (r string) {
+	r += fmt.Sprintf("%d", s.jetIdx)
+	fl, v := (1<<s.width)-1, 0
+	for y := s.height - 1; y >= 0 && v != fl; y-- {
+		l := s.draw_line(y, &utils.Set[Pos]{})
+		r += l
+		for i, c := range l[1 : len(l)-1] {
+			if c == '#' {
+				v = v | (1 << i)
+			}
+		}
+	}
+	return
+}
+
+func (s *Screen) draw_line(y int, fall *utils.Set[Pos]) string {
+	l := utils.MakeSlice[byte](s.width+2, '.')
+	l[0], l[len(l)-1] = '|', '|'
+	for x := 0; x < s.width; x++ {
+		p := Pos{x, y}
+		if fall.Contains(p) {
+			l[x+1] = '@'
+		} else if s.rocks.Contains(p) {
+			l[x+1] = '#'
+		}
+	}
+	return string(l)
 }
 
 func (s *Screen) draw() {
@@ -113,17 +142,7 @@ func (s *Screen) draw() {
 	}
 
 	for y := s.height + s.falling.height + 2; y >= 0; y-- {
-		l := utils.MakeSlice[byte](s.width+2, '.')
-		l[0], l[len(l)-1] = '|', '|'
-		for x := 0; x < s.width; x++ {
-			p := Pos{x, y}
-			if fall.Contains(p) {
-				l[x+1] = '@'
-			} else if s.rocks.Contains(p) {
-				l[x+1] = '#'
-			}
-		}
-		fmt.Println(string(l))
+		fmt.Println(s.draw_line(y, fall))
 	}
 	l := utils.MakeSlice[byte](s.width+2, '-')
 	l[0], l[len(l)-1] = '+', '+'
@@ -134,15 +153,56 @@ const SCREEN_WIDTH = 7
 
 var ROCKS_ORDER = []PieceType{HorzLine, Plus, InvertL, VertLine, Square}
 
+type FloorRef struct {
+	piece_count int
+	height      int
+}
+
 func main() {
-	s := utils.ReadFileLines("test")
+	s := utils.ReadFileLines("input")
 	scr := MakeScreen(SCREEN_WIDTH, []PieceMove(s[0]))
 
-	limit := 2_022
-	for p_cnt := 0; p_cnt < limit; p_cnt++ {
-		scr.falling = make_piece(ROCKS_ORDER[p_cnt%len(ROCKS_ORDER)], scr.height+3)
+	// Search loop
+	loop_start, loop_size, loop_height := 0, 0, 0
+	floors := make([]map[string]FloorRef, len(ROCKS_ORDER))
+	for i := range floors {
+		floors[i] = make(map[string]FloorRef)
+	}
+	for p_cnt := 0; ; p_cnt++ {
+		pt := ROCKS_ORDER[p_cnt%len(ROCKS_ORDER)]
+		fshape := scr.floor_shape()
+		if v, ok := floors[pt][fshape]; ok {
+			loop_start = p_cnt
+			loop_size = p_cnt - v.piece_count
+			loop_height = scr.height - v.height
+			break
+		} else {
+			floors[pt][fshape] = FloorRef{p_cnt, scr.height}
+		}
+		scr.falling = make_piece(pt, scr.height+3)
 		for scr.fall() {
 		}
 	}
-	fmt.Println("Part 1: ", scr.height)
+
+	p1, p2 := 2_022, 1_000_000_000_000
+	t1, t2 := p1-loop_start, p2-loop_start
+	tl1, tl2 := t1/loop_size, t2/loop_size
+	t1, t2 = t1-tl1*loop_size, t2-tl2*loop_size
+	p_cnt := 0
+	for ; p_cnt < utils.Max(t1, t2); p_cnt++ {
+		if p_cnt == t1 {
+			fmt.Println("Part 1: ", scr.height+tl1*loop_height)
+		} else if p_cnt == t2 {
+			fmt.Println("Part 2: ", scr.height+tl2*loop_height)
+		}
+
+		scr.falling = make_piece(ROCKS_ORDER[(p_cnt+loop_start)%len(ROCKS_ORDER)], scr.height+3)
+		for scr.fall() {
+		}
+	}
+	if p_cnt == t1 {
+		fmt.Println("Part 1: ", scr.height+tl1*loop_height)
+	} else if p_cnt == t2 {
+		fmt.Println("Part 2: ", scr.height+tl2*loop_height)
+	}
 }

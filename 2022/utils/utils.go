@@ -186,6 +186,14 @@ func (s *Set[T]) Remove(val T) {
 	delete(s.m, val)
 }
 
+func (s *Set[T]) RemoveFilter(filt func(v T) bool) {
+	for k := range s.m {
+		if filt(k) {
+			delete(s.m, k)
+		}
+	}
+}
+
 func (s *Set[T]) Contains(val T) bool {
 	_, c := s.m[val]
 	return c
