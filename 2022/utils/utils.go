@@ -203,9 +203,28 @@ func (s *Set[T]) Len() int {
 	return len(s.m)
 }
 
+func (s *Set[T]) Iter() <-chan T {
+	ch := make(chan T)
+	go func() {
+		for k := range s.m {
+			ch <- k
+		}
+		close(ch)
+	}()
+	return ch
+}
+
 func NewSet[T comparable]() *Set[T] {
 	s := &Set[T]{}
 	s.m = make(map[T]struct{})
+	return s
+}
+
+func SetFrom[T comparable](l []T) *Set[T] {
+	s := NewSet[T]()
+	for _, v := range l {
+		s.Add(v)
+	}
 	return s
 }
 
