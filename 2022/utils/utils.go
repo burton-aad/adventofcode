@@ -72,6 +72,15 @@ func IndexOf[T comparable](arr []T, val T) int {
 	return -1
 }
 
+func LastIndexOf[T comparable](arr []T, val T) int {
+	for i := len(arr) - 1; i >= 0; i-- {
+		if arr[i] == val {
+			return i
+		}
+	}
+	return -1
+}
+
 func Remove[T any](arr []T, i int) []T {
 	return append(arr[:i], arr[i+1:]...)
 }
@@ -89,6 +98,17 @@ func Insert[T any](arr []T, i int, value T) []T {
 	arr = append(arr[:i+1], arr[i:]...)
 	arr[i] = value
 	return arr
+}
+
+func LazyAtoi(s string) (r int, i int) {
+	for _, c := range s {
+		if c < '0' || c > '9' {
+			break
+		}
+		r = r*10 + int(c-'0')
+		i++
+	}
+	return
 }
 
 ////////////////////////////////////////////////////////
