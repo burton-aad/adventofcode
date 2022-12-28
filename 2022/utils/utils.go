@@ -203,6 +203,15 @@ func All(arr []bool) bool {
 	return true
 }
 
+func None(arr []bool) bool {
+	for _, value := range arr {
+		if value {
+			return false
+		}
+	}
+	return true
+}
+
 func Combinations(length int, n int) <-chan []int {
 	ch := make(chan []int)
 
