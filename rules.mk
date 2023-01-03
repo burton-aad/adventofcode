@@ -1,4 +1,8 @@
 
+SRC_C := $(wildcard */*.c)
+BIN_C := $(basename $(SRC_C))
+SRC_EL := $(wildcard */*.el)
+BIN_EL := $(SRC_EL:.el=.elc)
 SRC_CPP := $(wildcard *.cpp)
 BIN_CPP := $(basename $(SRC_CPP))
 SRC_RS := $(wildcard *.rs)
@@ -7,6 +11,7 @@ SRC_CARGO := $(wildcard */Cargo.toml)
 CARGO_FOLDER := $(SRC_CARGO:/Cargo.toml=)
 
 CXXFLAGS := -std=c++11
+EMACS := emacs
 
 .DEFAULT_GOAL := all
 
@@ -32,14 +37,17 @@ $(foreach jour, $(CARGO_FOLDER), $(eval $(call create_target_cargo, $(jour))))
 $(foreach jour, $(BIN_RS), $(eval $(call create_target_rs, $(jour))))
 
 .PHONY: all
-all: $(BIN_CPP) $(BIN_CARGO) $(BIN_RS)
+all: $(BIN_C) $(BIN_EL) $(BIN_CPP) $(BIN_CARGO) $(BIN_RS)
 
 %.o: %.cpp
 	g++ $(CXXFLAGS) -o $@ -c $<
 
+%.elc: %.el
+	$(EMACS) -Q --batch -L . -f batch-byte-compile $<
+
 .PHONY: clean
 clean:
-	rm -f $(BIN_CPP) $(SRC_CPP:.cpp=.o) $(BIN_RS) $(SRC_RS:.rs=.pdb)
+	rm -f $(BIN_C) $(BIN_EL) $(BIN_CPP) $(SRC_CPP:.cpp=.o) $(BIN_RS) $(SRC_RS:.rs=.pdb)
 	rm -rf $(CARGO_FOLDER:%=%/target) $(SRC_CARGO:.toml=.lock)
 
 FORCE:
