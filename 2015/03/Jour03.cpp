@@ -4,7 +4,6 @@
 #include <utility>
 #include <set>
 #include <sstream>
-#include <cassert>
 #include <array>
 
 int parse_path(std::istream &path)
@@ -56,10 +55,9 @@ int parse_path_year2(std::istream &path)
 
 int main(int argc, char **argv)
 {
-	const char * inname = "input03";
-	std::ifstream infile = std::ifstream();
-	std::stringstream ss;
+	const char * inname = "input";
 
+	// std::stringstream ss;
 	// ss << "^>";
 	// assert(parse_path_year2(ss) == 3);
 	// ss.str("");	ss.clear();
@@ -72,7 +70,7 @@ int main(int argc, char **argv)
 	if (argc > 1)
 		inname = argv[1];
 
-	infile.open(inname);
+	std::ifstream infile{inname};
 	std::cout << "houses with present : " << parse_path(infile) << std::endl;
 	infile.clear();
 	infile.seekg(0);

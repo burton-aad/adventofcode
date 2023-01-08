@@ -1,7 +1,6 @@
 
 #include <iostream>
 #include <fstream>
-#include <sstream>
 #include <cstdint>
 #include <cstdio>
 #include <vector>
@@ -9,15 +8,14 @@
 
 int main(int argc, char **argv)
 {
-	const char * inname = "input02";
-	std::ifstream infile = std::ifstream();
+	const char * inname = "input";
 	std::string line;
 	uint64_t paper = 0, ribbon = 0;
 
 	if (argc > 1)
 		inname = argv[1];
 
-	infile.open(inname);
+	std::ifstream infile{inname};
 
 	while (std::getline(infile, line)) {
 		int l, w, h;

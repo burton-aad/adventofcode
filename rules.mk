@@ -3,14 +3,14 @@ SRC_C := $(wildcard */*.c)
 BIN_C := $(basename $(SRC_C))
 SRC_EL := $(wildcard */*.el)
 BIN_EL := $(SRC_EL:.el=.elc)
-SRC_CPP := $(wildcard *.cpp)
+SRC_CPP := $(wildcard */*.cpp)
 BIN_CPP := $(basename $(SRC_CPP))
 SRC_RS := $(wildcard *.rs)
 BIN_RS := $(basename $(SRC_RS))
 SRC_CARGO := $(wildcard */Cargo.toml)
 CARGO_FOLDER := $(SRC_CARGO:/Cargo.toml=)
 
-CXXFLAGS := -std=c++11
+CXXFLAGS := -std=c++17
 EMACS := emacs
 
 .DEFAULT_GOAL := all

@@ -1,4 +1,4 @@
 
 include ../rules.mk
 
-Jour04: LDFLAGS += -lssl -lcrypto
+04/Jour04: LDFLAGS += -lssl -lcrypto

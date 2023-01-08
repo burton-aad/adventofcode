@@ -1,6 +1,8 @@
 #!/bin/bash
 ":"; exec emacs --no-site-file --script "$0" -- "$@" # -*-emacs-lisp-*-
 
+(require 'cl-lib)
+
 (defun jour1 (file)
   (let* ((input-s (with-temp-buffer
                     (insert-file-contents-literally file)
@@ -13,11 +15,9 @@
                     (1+ flr)
                   (1- flr)))
       (setq i (1+ i)))
-    (princ (format "%d - %d\n" (- (count ?\( input-s) (count ?\) input-s)) i))))
+    (princ (format "%d - %d\n" (- (cl-count ?\( input-s) (cl-count ?\) input-s)) i))))
 
-(jour1 "input01")
-"280 - 1797"
-
-(when (>= (length argv) 2)
-  (message (jour1 (cadr argv))))
+(if (>= (length argv) 2)
+    (jour1 (cadr argv))
+  (jour1 "input"))
 

@@ -3,20 +3,16 @@
 #include <fstream>
 #include <cstdint>
 
-using namespace std;
-
 int main(int argc, char **argv)
 {
-	const char * inname = "input01";
-	ifstream infile = ifstream();
+	const char * inname = "input";
 	char c;
 	int32_t floor = 0, down_floor = 0;
 
 	if (argc > 1)
 		inname = argv[1];
 
-	infile.open(inname);
-
+	std::ifstream infile{inname};
 	while (infile.get(c)) {
 		if (c == '(')
 			floor++;
@@ -27,6 +23,6 @@ int main(int argc, char **argv)
 		}
 	}
 
-	cout << "part 1 : " << floor << ", part 2 : " << down_floor << endl;
+	std::cout << "part 1 : " << floor << ", part 2 : " << down_floor << std::endl;
 	return 0;
 }

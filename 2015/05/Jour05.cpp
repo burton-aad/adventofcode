@@ -47,8 +47,7 @@ bool is_nice2(const std::string str)
 
 int main(int argc, char **argv)
 {
-	const char * inname = "input05";
-	std::ifstream infile = std::ifstream();
+	const char * inname = "input";
 	std::string line;
 	int count1 = 0, count2 = 0;
 
@@ -67,7 +66,7 @@ int main(int argc, char **argv)
 	if (argc > 1)
 		inname = argv[1];
 
-	infile.open(inname);
+	std::ifstream infile{inname};
 
 	while (std::getline(infile, line)) {
 		count1 += is_nice(line);
