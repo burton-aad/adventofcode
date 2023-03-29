@@ -3,7 +3,9 @@ package main
 import (
 	"aoc/utils"
 	"fmt"
+	"os"
 	"regexp"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -86,44 +88,58 @@ func next_paths(p MultiPath, valves map[string]Valve) (r []MultiPath) {
 
 func next_paths2(p MultiPath, valves map[string]Valve) (r []MultiPath) {
 	// Brute force mais un peu intelligent
-	cur := 0
+
+	// Tri du plus de temps
+	var rgn []int
 	for i := range p.paths {
-		if p.paths[i].time > p.paths[cur].time {
-			cur = i
-		}
+		rgn = append(rgn, i)
 	}
+	sort.Slice(rgn, func(i, j int) bool { return p.paths[i].time > p.paths[j].time })
 
-	cur_pos := p.paths[cur].path[len(p.paths[cur].path)-1]
-	m_gain, m_next := 0, ""
-	for _, n := range p.possible_next {
-		time_spent := valves[cur_pos].dist[n] + 1
-		flow_rate := valves[n].flow_rate
-		gain := (p.paths[cur].time - time_spent) * flow_rate
-		if time_spent < p.paths[cur].time && gain > m_gain {
-			m_gain = gain
-			m_next = n
-		}
-	}
-
-	// Choisi la solution optimal ou une autre plus proche
-	for i, n := range p.possible_next {
-		if n == m_next || valves[cur_pos].dist[n] < valves[cur_pos].dist[m_next] {
+	for _, cur := range rgn {
+		cur_pos := p.paths[cur].path[len(p.paths[cur].path)-1]
+		m_gain, m_next := 0, ""
+		for _, n := range p.possible_next {
 			time_spent := valves[cur_pos].dist[n] + 1
-			cur_path := make([]string, 0, len(p.paths[cur].path)+1)
-			cur_path = append(cur_path, p.paths[cur].path...)
-			r = append(r,
-				MultiPath{
-					append(utils.RemoveCopy(p.paths, cur),
-						Path{append(cur_path, n), p.paths[cur].time - time_spent}),
-					utils.RemoveCopy(p.possible_next, i),
-					p.release_pressure + (p.paths[cur].time-time_spent)*valves[n].flow_rate})
+			flow_rate := valves[n].flow_rate
+			gain := (p.paths[cur].time - time_spent) * flow_rate
+			if time_spent < p.paths[cur].time && gain > m_gain {
+				m_gain = gain
+				m_next = n
+			}
+		}
+
+		// Choisi la solution optimal ou une autre plus proche
+		for i, n := range p.possible_next {
+			if n == m_next || valves[cur_pos].dist[n] <= valves[cur_pos].dist[m_next] {
+				time_spent := valves[cur_pos].dist[n] + 1
+				cur_path := make([]string, 0, len(p.paths[cur].path)+1)
+				cur_path = append(cur_path, p.paths[cur].path...)
+				r = append(r,
+					MultiPath{
+						append(utils.RemoveCopy(p.paths, cur),
+							Path{append(cur_path, n), p.paths[cur].time - time_spent}),
+						utils.RemoveCopy(p.possible_next, i),
+						p.release_pressure + (p.paths[cur].time-time_spent)*valves[n].flow_rate})
+			}
+		}
+
+		// Essai un autre si le courant est bloqué.
+		if len(r) > 0 {
+			break
 		}
 	}
+
 	return
 }
 
 func main() {
-	s := utils.ReadFileLines("input")
+	input := "input"
+	if len(os.Args) > 1 {
+		input = os.Args[1]
+	}
+
+	s := utils.ReadFileLines(input)
 	valves := parse_input(s)
 
 	var nonnull_v []string
