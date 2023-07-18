@@ -10,6 +10,11 @@
 // md5 from openssl
 #include <openssl/evp.h>
 
+#if OPENSSL_API_COMPAT < 0x30000000L
+#define EVP_MD_fetch(x, h, y) (EVP_MD*)EVP_get_digestbyname(h)
+#define EVP_MD_free(_hash)
+#endif
+
 class MD5 {
 private:
 	 EVP_MD_CTX *_ctx = nullptr;
