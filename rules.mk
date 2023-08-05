@@ -22,8 +22,8 @@ endef
 
 define create_target_cargo
 BIN_CARGO += $(addprefix $(1),$(addprefix /target/debug/,$(1)))
-$$(lastword $$(BIN_CARGO)): $(wildcard $(1)/src/*.rs) $(1)/Cargo.toml
-	cargo build --manifest-path $$?
+$$(lastword $$(BIN_CARGO)): $(1)/Cargo.toml $(wildcard $(1)/src/*.rs)
+	cargo build --manifest-path $$<
 	touch $$@
 endef
 
