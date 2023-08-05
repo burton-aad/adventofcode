@@ -2,11 +2,13 @@
 
 from __future__ import print_function
 import sys
+import argparse
+
 
 def power_lvl(x, y, serial):
     rackId = x + 10
     plvl = (rackId * y + serial) * rackId
-    return ((plvl % 1000) / 100) - 5
+    return ((plvl % 1000) // 100) - 5
 
 class Grid:
     def __init__(self, serial, w=300, h=300):
@@ -42,7 +44,7 @@ def jour11(grid_serial):
 
 
 if __name__ == "__main__":
-    input = 5034
-    if len(sys.argv) > 1:
-        input = int(sys.argv[1])
-    jour11(input)
+    parser = argparse.ArgumentParser(description='AoC 2018 - Jour 11')
+    parser.add_argument("serial", nargs='?', type=int, default=5034, help="grid serial number")
+    args = parser.parse_args()
+    jour11(args.serial)

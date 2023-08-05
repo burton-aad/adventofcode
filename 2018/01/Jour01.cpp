@@ -2,16 +2,23 @@
 #include <iostream>
 #include <fstream>
 #include <unordered_set>
+#include <string.h>
 
 int main(int argc, char **argv)
 {
 	const char* input;
 	if (argc < 2)
-		input = "input01";
+		input = "input";
 	else
 		input = argv[1];
 
 	std::ifstream in (input);
+	if (not in.is_open())
+	{
+		std::cerr << "Cannot open '" << input << "' : " << strerror(errno) << std::endl;
+		return 1;
+	}
+
 	int val;
 	int freq = 0;
 	bool sec = false, pre = false;
@@ -27,7 +34,7 @@ int main(int argc, char **argv)
 			freq += val;
 			if (!sec && s.find(freq) != s.end()) {
 				sec = true;
-				std::cout << "reache twice : " << freq << std::endl;
+				std::cout << "reaches twice : " << freq << std::endl;
 			}
 			s.insert(freq);
 			in >> val;

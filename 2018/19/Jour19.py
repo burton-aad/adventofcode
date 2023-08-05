@@ -2,10 +2,12 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import print_function
-import sys
+import sys, os
 import argparse
 import re
 import copy
+
+sys.path.append(os.path.join(os.path.dirname(__file__), "..", "16"))
 from Jour16 import OPCODES
 
 
@@ -56,8 +58,8 @@ def jour19(f):
     # print("Part 2:", cpu.regs[0])
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Jour 19 2018')
-    parser.add_argument('input_file', nargs='?', default="input19", help='the input file')
+    parser = argparse.ArgumentParser(description='AoC 2018 - Jour 19')
+    parser.add_argument('input_file', nargs='?', default="input", help='the input file')
     args = parser.parse_args(sys.argv[1:])
     with open(args.input_file) as f:
         jour19(f)

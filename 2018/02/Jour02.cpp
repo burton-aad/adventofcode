@@ -6,7 +6,7 @@
 #include <algorithm>
 #include <vector>
 
-#include "../enumerate.h"
+#include "../../enumerate.h"
 
 template<class T, class U>
 bool find_val(const std::unordered_map<T, U>& m, const U val)
@@ -40,9 +40,9 @@ template<class T, class U>
 void print_map(const std::unordered_map<T, U>& m)
 {
 	std::cout << "test m : {";
-	for (auto it : enumerate(m)) {
-		if (std::get<0>(it) > 0)  std::cout << ", ";
-		std::cout << std::get<1>(it).first << ": " << std::get<1>(it).second;
+	for (auto [i, it] : enumerate(m)) {
+		if (i > 0)  std::cout << ", ";
+		std::cout << it.first << ": " << it.second;
 	}
 	std::cout << "}" << std::endl;
 }
@@ -94,7 +94,7 @@ int main(int argc, char **argv)
 {
 	const char* input;
 	if (argc < 2)
-		input = "input02";
+		input = "input";
 	else
 		input = argv[1];
 

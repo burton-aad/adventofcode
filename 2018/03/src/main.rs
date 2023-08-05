@@ -53,7 +53,7 @@ impl fmt::Display for Fabric {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         for v in self.v.iter() {
             let s: String = v.iter().collect();
-            writeln!(f, "{}", s);
+            writeln!(f, "{}", s)?;
         }
         Ok(())
     }
@@ -95,7 +95,7 @@ impl Fabric {
 
 
 fn main() {
-    let input = env::args().nth(1).unwrap_or(String::from("input03"));
+    let input = env::args().nth(1).unwrap_or(String::from("input"));
     let mut fab = Fabric::new();
     let mut claims: Vec<Rect> = Vec::new();
 

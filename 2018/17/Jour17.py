@@ -137,9 +137,9 @@ def jour17(f, debug=False):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Jour 17 2018')
+    parser = argparse.ArgumentParser(description='AoC 2018 - Jour 17')
 
-    parser.add_argument('input_file', nargs='?', default="input17", help='the input file')
+    parser.add_argument('input_file', nargs='?', default="input", help='the input file')
     parser.add_argument('-d', "--debug", action='store_true', help="print debug")
 
     args = parser.parse_args(sys.argv[1:])

@@ -4,6 +4,7 @@
 from __future__ import print_function
 import sys
 import re
+import argparse
 from pprint import pprint
 
 def make_op(f):
@@ -71,10 +72,10 @@ def parse_input(f):
                     if m:
                         samples[-1].append([int(m.group(1)), int(m.group(2)), int(m.group(3)), int(m.group(4))])
                     else:
-                        samples[-1].append(map(int, l.split()))
+                        samples[-1].append(list(map(int, l.split())))
         else:
             # parse second part
-            prog.append(map(int, l.strip().split()))
+            prog.append(list(map(int, l.strip().split())))
     return samples, prog
 
 
@@ -96,7 +97,7 @@ def jour16(f):
     # search opcode for each ops
     ops = [None] * len(OPCODES)
     while None in ops:
-        i = map(len, possible_ops).index(1)
+        i = list(map(len, possible_ops)).index(1)
         op = possible_ops[i].pop()
         ops[i] = OPCODES[op]
         for s in possible_ops:
@@ -111,8 +112,8 @@ def jour16(f):
 
 
 if __name__ == "__main__":
-    input = "input16"
-    if len(sys.argv) > 1:
-        input = sys.argv[1]
-    with open(input) as f:
+    parser = argparse.ArgumentParser(description='AoC 2018 - Jour 16')
+    parser.add_argument("input", nargs='?', default="input")
+    args = parser.parse_args()
+    with open(args.input) as f:
         jour16(f)

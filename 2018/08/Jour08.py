@@ -2,6 +2,7 @@
 
 from __future__ import print_function
 import sys
+import argparse
 
 
 class Node:
@@ -46,13 +47,14 @@ def jour08(root):
     print("part 2:", root.value())
 
 if __name__ == "__main__":
-    input = "input08"
-    if len(sys.argv) > 1:
-        input = sys.argv[1]
+    parser = argparse.ArgumentParser(description='AoC 2018 - Jour 08')
+    parser.add_argument("input", nargs='?', default="input")
+    args = parser.parse_args()
+
     l = []
-    with open(input) as f:
+    with open(args.input) as f:
         txt = f.read()
-        l = map(int, txt.split())
+        l = [int(x) for x in txt.split()]
         # print(l)
         root = Parser(l).parse()
     # print(root.str())

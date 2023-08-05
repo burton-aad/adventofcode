@@ -3,6 +3,8 @@
 import sys
 import re
 from operator import add
+import argparse
+
 
 WAKEUP = '.'
 SLEEP = '#'
@@ -58,7 +60,7 @@ def get_shifts(f):
         elif l == "wakes up":
             shifts.setdefault(d, Guard()).wakes_up(t)
     # for k in sorted(shifts):
-    #     print k, shifts[k]
+    #     print(k, shifts[k])
     return shifts
 
 
@@ -67,27 +69,24 @@ def jour04(shifts):
     for g in shifts.values():
         if g.id not in sleep:
             sleep[g.id] = [0]*60
-        sleep[g.id] = map(add, sleep[g.id], map(lambda x: x == SLEEP, g.status()))
-    # print sleep
+        sleep[g.id] = list(map(add, sleep[g.id], map(lambda x: x == SLEEP, g.status())))
+    # print(sleep)
 
     grd1,slp1 = max(sleep.items(), key=lambda x : sum(x[1]))
     m1 = slp1.index(max(slp1))
-    print "part 1: guard {}, min {} -> {}".format(grd1, m1, int(grd1) * m1)
+    print("part 1: guard {}, min {} -> {}".format(grd1, m1, int(grd1) * m1))
 
     grd2,slp2 = max(sleep.items(), key=lambda x: max(x[1]))
     m2 = slp2.index(max(slp2))
-    print "part 2: guard {}, min {} -> {}".format(grd2, m2, int(grd2) * m2)
-
-
-def main(infile = "input04"):
-    shifts = {}
-    with open(infile) as f:
-        shifts = get_shifts(f)
-    jour04(shifts)
+    print("part 2: guard {}, min {} -> {}".format(grd2, m2, int(grd2) * m2))
     
 
 if __name__ == "__main__":
-    if len(sys.argv) > 1:
-        main(sys.argv[1])
-    else:
-        main()
+    parser = argparse.ArgumentParser(description='AoC 2018 - Jour 04')
+    parser.add_argument("input", nargs='?', default="input")
+    args = parser.parse_args()
+
+    shifts = {}
+    with open(args.input) as f:
+        shifts = get_shifts(f)
+    jour04(shifts)

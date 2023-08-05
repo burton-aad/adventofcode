@@ -70,7 +70,7 @@ fn jour05(s: &str) {
 }
 
 fn main() -> std::io::Result<()> {
-    let input = env::args().nth(1).unwrap_or(String::from("input05"));
+    let input = env::args().nth(1).unwrap_or(String::from("input"));
     let mut f = File::open(input)?;
 	let mut s = String::new();
 	f.read_to_string(&mut s)?;

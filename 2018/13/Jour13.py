@@ -3,6 +3,8 @@
 from __future__ import print_function
 import sys
 from operator import attrgetter
+import argparse
+
 
 class Cart:
     UP = 0
@@ -56,7 +58,7 @@ def tick(carts, tracks):
     l = []
     for i,c in enumerate(carts):
         c.move()
-        f = filter(lambda x: x.pos() == c.pos(), carts)
+        f = list(filter(lambda x: x.pos() == c.pos(), carts))
         if len(f) > 1:
             l.extend(f)
     for c in carts:
@@ -100,9 +102,10 @@ def jour13(f):
 
 
 if __name__ == "__main__":
-    input = "input13"
-    if len(sys.argv) > 1:
-        input = sys.argv[1]
-    with open(input) as f:
+    parser = argparse.ArgumentParser(description='AoC 2018 - Jour 13')
+    parser.add_argument("input", nargs='?', default="input")
+    args = parser.parse_args()
+
+    with open(args.input) as f:
         jour13(f)
 

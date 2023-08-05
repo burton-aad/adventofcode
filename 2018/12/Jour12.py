@@ -3,6 +3,8 @@
 from __future__ import print_function
 import sys
 import collections
+import argparse
+
 
 def potsToNum(pots):
     out = 0
@@ -57,15 +59,16 @@ def jour12(garden):
         garden.process()
     print("Part 1:", garden.sum_num())
 
-    garden.process(50000000000-20)
+    garden.process(50_000_000_000 - 20)
     print("Part 2:", garden.sum_num())
 
 
 if __name__ == "__main__":
-    input = "input12"
-    if len(sys.argv) > 1:
-        input = int(sys.argv[1])
-    with open(input) as f:
+    parser = argparse.ArgumentParser(description='AoC 2018 - Jour 12')
+    parser.add_argument("input", nargs='?', default="input")
+    args = parser.parse_args()
+
+    with open(args.input) as f:
         init_state = f.readline().split()[2]
         print(init_state)
         g = Garden(init_state)

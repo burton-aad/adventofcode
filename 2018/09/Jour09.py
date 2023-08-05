@@ -19,8 +19,8 @@ class linkedVec:
     def reorg(self, i):
         l = len(self.v[i])
         if l > self.limit:
-            self.v.insert(i+1, self.v[i][l/2:])
-            self.v[i][l/2:] = []
+            self.v.insert(i+1, self.v[i][l//2:])
+            self.v[i][l//2:] = []
 
     def insert(self, idx, item):
         i = 0

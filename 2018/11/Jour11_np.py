@@ -3,6 +3,7 @@
 from __future__ import print_function
 import sys
 import numpy as np
+import argparse
 
 
 def find_max(g, size=3):
@@ -12,7 +13,7 @@ def find_max(g, size=3):
     # print(subg)
     t = max(subg)
     i = subg.index(t)
-    return t, ((i % (n-size+1)) + 1, (i / (n-size+1)) + 1)
+    return t, ((i % (n-size+1)) + 1, (i // (n-size+1)) + 1)
 
 
 def jour11(serial, gs):
@@ -29,9 +30,9 @@ def jour11(serial, gs):
 
 
 if __name__ == "__main__":
-    serial = 5034
-    if len(sys.argv) > 1:
-        serial = int(sys.argv[1])
-    jour11(serial, 300)
+    parser = argparse.ArgumentParser(description='AoC 2018 - Jour 11')
+    parser.add_argument("serial", nargs='?', type=int, default=5034, help="grid serial number")
+    args = parser.parse_args()
+    jour11(args.serial, 300)
 
 

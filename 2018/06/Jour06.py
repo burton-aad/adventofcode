@@ -2,6 +2,7 @@
 
 from __future__ import print_function
 import sys
+import argparse
 
 def man_dist(p1, p2):
     return abs(p1[0]-p2[0]) + abs(p1[1]-p2[1])
@@ -17,7 +18,7 @@ def jour06(pts):
     lim_p2 = 10000
     for x in range(x_max+1):
         for y in range(y_max+1):
-            t = map(lambda p:man_dist(p, (x,y)), pts)
+            t = list(map(lambda p:man_dist(p, (x,y)), pts))
 
             m = min(t)
             i = t.index(m)
@@ -32,16 +33,17 @@ def jour06(pts):
                 p2_size += 1
 
     # print(p1_sizes)
-    print("part 1 :", max(p1_sizes))
+    print("part 1 :", max(s for s in p1_sizes if s is not None))
     print("part 2 :", p2_size)
 
 
 if __name__ == "__main__":
-    input = "input06"
-    if len(sys.argv) > 1:
-        input = sys.argv[1]
+    parser = argparse.ArgumentParser(description='AoC 2018 - Jour 06')
+    parser.add_argument("input", nargs='?', default="input")
+    args = parser.parse_args()
+
     p = []
-    with open(input) as f:
+    with open(args.input) as f:
         for l in f:
             i,j = l.split(", ")
             p.append((int(i), int(j)))

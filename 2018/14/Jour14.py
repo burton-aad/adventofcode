@@ -2,6 +2,7 @@
 
 from __future__ import print_function
 import sys
+import argparse
 
 
 def jour14(end):
@@ -11,7 +12,7 @@ def jour14(end):
     while len(r) < end+10:
         nr = r[e1] + r[e2]
         if nr > 9:
-            r.append(nr/10)
+            r.append(nr//10)
             r.append(nr%10)
         else:
             r.append(nr)
@@ -30,7 +31,7 @@ def jour14_2(end):
         # print(r)
         nr = r[e1] + r[e2]
         if nr > 9:
-            r.append(nr/10)
+            r.append(nr//10)
             r.append(nr%10)
         else:
             r.append(nr)
@@ -42,8 +43,9 @@ def jour14_2(end):
         print("Part 2:", len(r)-endl-1)
 
 if __name__ == "__main__":
-    input = 894501
-    if len(sys.argv) > 1:
-        input = int(sys.argv[1])
-    jour14(input)
-    jour14_2(input)
+    parser = argparse.ArgumentParser(description='AoC 2018 - Jour 14')
+    parser.add_argument("recipes", nargs='?', type=int, default=894501)
+    args = parser.parse_args()
+
+    jour14(args.recipes)
+    jour14_2(args.recipes)

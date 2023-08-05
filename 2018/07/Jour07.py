@@ -3,6 +3,8 @@
 from __future__ import print_function
 import sys
 import re
+import argparse
+
 
 class Node:
     def __init__(self, id):
@@ -72,12 +74,13 @@ def jour07(roots):
 
 
 if __name__ == "__main__":
-    input = "input07"
-    if len(sys.argv) > 1:
-        input = sys.argv[1]
+    parser = argparse.ArgumentParser(description='AoC 2018 - Jour 07')
+    parser.add_argument("input", nargs='?', default="input")
+    args = parser.parse_args()
+
     r = re.compile("Step (\w+) must be finished before step (\w+) can begin.")
     d = {}
-    with open(input) as f:
+    with open(args.input) as f:
         for l in f:
             m = r.match(l)
             p = m.group(1)

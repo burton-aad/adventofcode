@@ -3,6 +3,8 @@
 from __future__ import print_function
 import sys
 import re
+import argparse
+
 
 class Point:
     def __init__(self, position, velocity):
@@ -33,8 +35,8 @@ def draw(pts):
     print()
 
 def draw_size(pts):
-    x = map(lambda p: p.x, pts)
-    y = map(lambda p: p.y, pts)
+    x = list(map(lambda p: p.x, pts))
+    y = list(map(lambda p: p.y, pts))
     xmin = min(x)
     ymin = min(y)
     w = max(x) - xmin + 1
@@ -47,24 +49,25 @@ def jour10(pts):
     rect = w*h
     tick = 0
     while True:
-        map(Point.tick, pts)
+        list(map(Point.tick, pts))
         _, _, w, h = draw_size(pts)
         if rect < w*h:
             break
         rect = w*h
         tick += 1
-    print("tick {}".format(tick))
-    map(Point.untick, pts) # we gone one too far
+    list(map(Point.untick, pts)) # we gone one too far
     draw(pts)
+    print("tick {}".format(tick))
 
 
 if __name__ == "__main__":
-    input = "input10"
-    if len(sys.argv) > 1:
-        input = sys.argv[1]
+    parser = argparse.ArgumentParser(description='AoC 2018 - Jour 10')
+    parser.add_argument("input", nargs='?', default="input")
+    args = parser.parse_args()
+
     r = re.compile("position=<\s*([-0-9]+),\s*([-0-9]+)> velocity=<\s*([-0-9]+),\s*([-0-9]+)>")
     pts = []
-    with open(input) as f:
+    with open(args.input) as f:
         for l in f:
             m = r.match(l)
             pts.append(Point((int(m.group(1)), int(m.group(2))), (int(m.group(3)), int(m.group(4)))))

@@ -50,18 +50,21 @@ class GameOfLife:
         for j,l in enumerate(self.states):
             rl = []
             for i,c in enumerate(l):
+                # t = list(map(lambda y,x: self.states[x][y], vois8(i,j)))
                 if c == OPEN:
-                    if map(lambda (y,x): self.states[x][y], vois8(i,j)).count(TREE) >= 3:
+                    t = [self.states[x][y] for y,x in vois8(i,j)]
+                    if t.count(TREE) >= 3:
                         rl.append(TREE)
                     else:
                         rl.append(OPEN)
                 elif c == TREE:
-                    if map(lambda (y,x): self.states[x][y], vois8(i,j)).count(LUMBERYARD) >= 3:
+                    t = [self.states[x][y] for y,x in vois8(i,j)]
+                    if t.count(LUMBERYARD) >= 3:
                         rl.append(LUMBERYARD)
                     else:
                         rl.append(TREE)
                 elif c == LUMBERYARD:
-                    t = map(lambda (y,x): self.states[x][y], vois8(i,j))
+                    t = [self.states[x][y] for y,x in vois8(i,j)]
                     if t.count(LUMBERYARD) > 0 and t.count(TREE) > 0:
                         rl.append(LUMBERYARD)
                     else:
@@ -96,8 +99,8 @@ def jour18(f):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Jour 18 2018')
-    parser.add_argument('input_file', nargs='?', default="input18", help='the input file')
+    parser = argparse.ArgumentParser(description='AoC 2018 - Jour 18')
+    parser.add_argument('input_file', nargs='?', default="input", help='the input file')
     args = parser.parse_args(sys.argv[1:])
     with open(args.input_file) as f:
         jour18(f)

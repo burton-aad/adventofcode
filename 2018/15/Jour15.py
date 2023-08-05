@@ -4,19 +4,15 @@
 from __future__ import print_function
 import sys
 from collections import deque
+import argparse
 
 
 def vois4(p):
     i,j = p
     return [(i,j-1), (i-1,j), (i+1,j), (i,j+1)]
 
-def readOrderCmp(x, y):
-    i = x[1] - y[1]
-    if i == 0:
-        return x[0] - y[0]
-    else:
-        return i
-
+def count_elfes(players):
+    return sum([x.ptype == 'E' for x in players])
 
 class Game:
     def __init__(self, carte, players):
@@ -24,23 +20,19 @@ class Game:
         self.carte = carte
         self.players = {}
         for p in players:
-            self.players[p] = p.copy()
+            self.players[p.pos] = p.copy()
         self.full_round = 0
         self.fini = False
 
     def extra_elfes_power(self, inc):
-        for p in filter(lambda x: x.ptype == 'E', self.players.values()):
-            p.ap += inc
+        for p in self.players.values():
+            if p.ptype == 'E':
+                p.ap += inc
 
     def finish(self):
         if not self.fini:
-            it = self.players.itervalues()
-            pl = next(it)
-            self.fini = True
-            for p in it:
-                if pl.ptype != p.ptype:
-                    self.fini = False
-                    break
+            elves = count_elfes(self.players.values())
+            self.fini = elves == 0 or elves == len(self.players)
         return self.fini
 
     def print_map(self):
@@ -58,20 +50,19 @@ class Game:
     def play_round(self):
         "return True if something change in the map (players have moved or died)"
         mv = False
-        for p in sorted(self.players.values()):
+        for pos, pnj in sorted(self.players.items(), key=lambda x: (x[0][1], x[0][0])):
+            if pnj.hp <= 0:
+                # died from other attack
+                continue
             if self.finish():
                 # current round does not end completely
                 return mv
-            if p.hp <= 0:
-                # died from other attack
-                continue
-            self.players.pop(p)
+            p = self.players.pop(pos)
             mv |= p.move(self.carte, self.players)
-            self.players[p] = p
+            self.players[p.pos] = p
             mv |= p.attack(self.players)
         self.full_round += 1
         return mv
-
 
 
 class PNJ:
@@ -115,10 +106,10 @@ class PNJ:
                     elif carte[v[1]][v[0]]:
                         qr.append((move, v))
                         r.add(v)
-            q = sorted(qr, cmp=readOrderCmp, key=lambda x: x[1])
+            q = sorted(qr, key=lambda x: (x[1][1], x[1][0]))
             qr = []
         if found:
-            found.sort(cmp=readOrderCmp, key=lambda x: x[1])
+            found.sort(key=lambda x: (x[1][1], x[1][0]))
             # print(self, "move to", found[0][0])
             self.pos = found[0][0]
             return True
@@ -127,13 +118,13 @@ class PNJ:
     def attack(self, players):
         "return True if an opponent die with this attack"
         p = sorted(filter(lambda x: x and x.ptype != self.ptype, map(players.get, vois4(self.pos))), key=lambda x: x.hp)
-        # print(self, "attack", p)
         if len(p) > 0:
+            # print(self, "attack", p[0])
             p[0].hp -= self.ap
             if p[0].hp <= 0:
                 # an ennemy died
                 # print(p[0], "have died from", self)
-                players.pop(p[0])
+                players.pop(p[0].pos)
                 return True
         return False
 
@@ -146,13 +137,6 @@ class PNJ:
 
     def __getitem__(self, i):
         return self.pos[i]
-
-    def __cmp__(self, o):
-        return readOrderCmp(self, o)
-
-    def __hash__(self):
-        return hash(self.pos)
-
 
 
 def parse_input(f):
@@ -186,7 +170,7 @@ def jour15(f, limit=-1, debug=False):
     print("Part 1:", game.full_round * sum(map(lambda x:x.hp, game.players.values())))
 
     # Part 2
-    num_elfes = len(filter(lambda x: x.ptype == 'E', players))
+    num_elfes = count_elfes(players)
     inc_power = 0
     while True:
         inc_power += 1
@@ -197,7 +181,7 @@ def jour15(f, limit=-1, debug=False):
             if debug and mv_or_die:
                 print("round", game.full_round)
                 game.print_map()
-        n = len(filter(lambda x: x.ptype == 'E', game.players.values()))
+        n = count_elfes(game.players.values())
         print("with {} power, {}/{} elfes stay alive".format(3+inc_power, n, num_elfes))
         if n == num_elfes:
             print("Part 2:", game.full_round * sum(map(lambda x:x.hp, game.players.values())))
@@ -206,11 +190,12 @@ def jour15(f, limit=-1, debug=False):
 
 
 if __name__ == "__main__":
-    input = "input15"
-    if len(sys.argv) > 1:
-        input = sys.argv[1]
-    with open(input) as f:
-        jour15(f)
+    parser = argparse.ArgumentParser(description='AoC 2018 - Jour 15')
+    parser.add_argument("input", nargs='?', default="input")
+    parser.add_argument("-d", "--debug", action="store_true")
+    args = parser.parse_args()
+    with open(args.input) as f:
+        jour15(f, debug=args.debug)
 
 
 # test
@@ -223,6 +208,8 @@ input6 = ["#########", "#G......#", "#.E.#...#", "#..##..G#", "#...##..#", "#...
 
 input_test = ["##########", "#...#...E#", "#...G....#", "#E..#....#", "##########"]
 input_test2 = ["#######", "#E..G.#", "#...#.#", "#.G.#G#", "#######"]
+input_test3 = ["#######", "#.E...#", "#.....#", "#...G.#", "#######"]
+input_test4 = ["#########", "#G..G..G#", "#.......#", "#.......#", "#G..E..G#", "#.......#", "#.......#", "#G..G..G#", "#########"]
 
 # jour15(input_test2, 1)
 # jour15(input6, debug=False)
