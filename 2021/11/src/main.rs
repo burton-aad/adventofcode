@@ -79,10 +79,10 @@ fn main() {
         .collect_vec();
 
     let mut energy = start_energy.clone();
-	println!("Part 1 {}", (0..100).map(|_| step(&mut energy)).sum::<usize>());
+	println!("Part 1: {}", (0..100).map(|_| step(&mut energy)).sum::<usize>());
 
 	let total = energy.len() * energy[0].len();
 	let mut s = 100;
 	while step(&mut energy) != total { s += 1; }
-	println!("Part 2 {}", s+1);
+	println!("Part 2: {}", s+1);
 }

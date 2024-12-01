@@ -88,7 +88,7 @@ fn game<'a>(cards: &'a mut Vec<BingoCard>, nums: &Vec<u32>) -> (usize, u32)
 }
 
 fn main() {
-    let input = env::args().nth(1).unwrap_or(String::from("input04"));
+    let input = env::args().nth(1).expect("Usage: run <input>");
     let mut f = BufReader::new(fs::File::open(input).unwrap());
     let mut buf = String::new();
 

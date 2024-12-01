@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 
+import argparse
 import sys, os
 from collections import Counter
-sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+sys.path.append(os.path.join(os.path.dirname(__file__), "..", ".."))
 from utils import partition
 import time
 
@@ -28,4 +29,7 @@ def main(infile):
     print("Part 2:", ox * co2)
 
 if __name__=="__main__":
-    main(sys.argv[1])
+    parser = argparse.ArgumentParser(description='AoC 2021 - Jour 03')
+    parser.add_argument("input", nargs='?', default="input")
+    args = parser.parse_args()
+    main(args.input)

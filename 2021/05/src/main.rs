@@ -12,12 +12,16 @@ use num::range_step;
 struct Ocean {
     m_y: usize,
     m_x: usize,
-    floor: Vec<Vec<i32>>,
+    floor1: Vec<Vec<i32>>,
+    floor2: Vec<Vec<i32>>,
 }
 
 impl fmt::Display for Ocean {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        for v in self.floor.iter() {
+        for v in self.floor1.iter() {
+            writeln!(f, "{:?}", v)?;
+        }
+        for v in self.floor2.iter() {
             writeln!(f, "{:?}", v)?;
         }
         Ok(())
@@ -41,37 +45,41 @@ impl Ocean {
 
         if y >= self.m_y {
             self.m_y = y + 1;
-            self.floor.resize_with(self.m_y, Default::default);
+            self.floor1.resize_with(self.m_y, Default::default);
+            self.floor2.resize_with(self.m_y, Default::default);
             resize_x = true;
         }
 
         if resize_x {
-            for v in self.floor.iter_mut() {
+            for v in self.floor1.iter_mut() {
+                v.resize(self.m_x, 0);
+            }
+            for v in self.floor2.iter_mut() {
                 v.resize(self.m_x, 0);
             }
         }
     }
 
-    fn get(&mut self, x: usize, y: usize) -> &mut i32 {
+    fn add_point(&mut self, x: usize, y: usize, hv_line: bool) {
         self.inc_size(x, y);
-        &mut self.floor[y][x]
+		if hv_line { self.floor1[y][x] += 1 }
+        self.floor2[y][x] += 1
     }
 
     fn add_hv_line(&mut self, x1: usize, y1: usize, x2: usize, y2: usize) {
         // println!("{},{} -> {},{}", x1, y1, x2, y2);
         if x1 == x2 {
             for y in bidi_range(y1 as i32, y2 as i32) {
-                *self.get(x1, y as usize) += 1;
+                self.add_point(x1, y as usize, true);
             }
         } else if y1 == y2 {
             for x in bidi_range(x1 as i32, x2 as i32) {
-                *self.get(x as usize, y1) += 1;
+                self.add_point(x as usize, y1, true);
             }
         }
-		// Comment for part 1
 		else {
 			for (x, y) in bidi_range(x1 as i32, x2 as i32).zip(bidi_range(y1 as i32, y2 as i32)) {
-				*self.get(x as usize, y as usize) += 1;
+				self.add_point(x as usize, y as usize, false);
 			}
 		}
     }
@@ -91,7 +99,7 @@ impl Ocean {
 }
 
 fn main() {
-    let input = env::args().nth(1).unwrap_or(String::from("input04"));
+    let input = env::args().nth(1).expect("Usage: run <input>");
     let f = BufReader::new(fs::File::open(input).unwrap());
     let mut o: Ocean = Default::default();
 
@@ -101,8 +109,14 @@ fn main() {
 
     // println!("{}", o);
     println!(
-        "Count : {}",
-        o.floor.iter()
+        "Part 1: {}",
+        o.floor1.iter()
+            .map(|v| v.iter().filter(|x| **x > 1).count())
+            .sum::<usize>()
+    );
+    println!(
+        "Part 2: {}",
+        o.floor2.iter()
             .map(|v| v.iter().filter(|x| **x > 1).count())
             .sum::<usize>()
     );
