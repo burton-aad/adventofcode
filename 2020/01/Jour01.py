@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import sys
+import argparse
 from itertools import combinations, count
 from bisect import bisect
 
@@ -27,7 +28,11 @@ def findn(nums, order):
             return values
 
 if __name__=="__main__":
-    with open(sys.argv[1]) as f:
+    parser = argparse.ArgumentParser(description='AoC 2020 - Jour 01')
+    parser.add_argument("input", nargs='?', default="input")
+    args = parser.parse_args()
+
+    with open(args.input) as f:
         nums = [int(x) for x in f]
     nums.sort()
     l, r = find2(nums)
