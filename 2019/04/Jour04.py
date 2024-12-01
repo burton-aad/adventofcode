@@ -2,6 +2,7 @@
 
 # input : 272091-815432
 
+import argparse
 import itertools
 
 def sorted_num(n):
@@ -13,10 +14,10 @@ def have2Adjacent(n):
 def haveExact2Adjacent(n):
     return any([len(list(g)) == 2 for _, g in itertools.groupby(str(n))])
 
-def main():
+def main(start, end):
     r = []
     r2 = []
-    for i in range(272091, 815432):
+    for i in range(start, end):
         if sorted_num(i):
             if haveExact2Adjacent(i):
                 r.append(i)
@@ -27,3 +28,10 @@ def main():
     print("Part 2:", len(r2))
 
 
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='AoC 2019 - Jour 04')
+    parser.add_argument("start", nargs='?', type=int, default=272091)
+    parser.add_argument("end", nargs='?', type=int, default=815432)
+    args = parser.parse_args()
+
+    main(args.start, args.end)

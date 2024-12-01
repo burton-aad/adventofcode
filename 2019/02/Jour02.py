@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 
 from __future__ import print_function
-import sys
+import sys, os
 import itertools
+
+sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 from intcomp import Intcode
 
 def main(v):
