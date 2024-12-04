@@ -17,3 +17,10 @@ pub fn Counter(comptime T: type, array: []T, alloc: std.mem.Allocator) !std.Auto
     }
     return map;
 }
+
+pub fn int(comptime T: type, str: []const u8) !T
+{
+    if (std.mem.startsWith(u8, str, "0x"))
+        return try std.fmt.parseInt(T, str, 16);
+    return try std.fmt.parseInt(T, str, 10);
+}
