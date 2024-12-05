@@ -24,3 +24,23 @@ pub fn int(comptime T: type, str: []const u8) !T
         return try std.fmt.parseInt(T, str, 16);
     return try std.fmt.parseInt(T, str, 10);
 }
+
+pub fn read_lines(path: [*:0]const u8, allocator: std.mem.Allocator) !std.ArrayList([]u8) {
+    var lines = std.ArrayList([]u8).init(allocator);
+
+    const input = try std.fs.cwd().openFileZ(path, .{});
+    defer input.close();
+
+    while (try input.reader().readUntilDelimiterOrEofAlloc(allocator, '\n', std.math.pow(usize, 2, 24))) |line| {
+        try lines.append(line);
+    }
+
+    return lines;
+}
+
+pub fn free_lines(lines: std.ArrayList([]u8)) void {
+    for (lines.items) |l| {
+        lines.allocator.free(l);
+    }
+    lines.deinit();
+}
