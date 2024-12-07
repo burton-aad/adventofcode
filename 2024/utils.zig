@@ -44,3 +44,60 @@ pub fn free_lines(lines: std.ArrayList([]u8)) void {
     }
     lines.deinit();
 }
+
+fn productIterator(comptime T: type) type {
+    return struct {
+        const Self = @This();
+
+        data: []const T,
+        buf: []T,
+        indexes: []usize,
+        allocator: std.mem.Allocator,
+        start: bool,
+
+        pub fn init(data: []const T, repeat: usize, allocator: std.mem.Allocator) !Self {
+            const buf = try allocator.alloc(T, repeat);
+            errdefer allocator.free(buf);
+            const indexes = try allocator.alloc(usize, repeat);
+            errdefer allocator.free(indexes);
+            @memset(indexes, 0);
+            return .{
+                .data = data,
+                .buf = buf,
+                .indexes = indexes,
+                .allocator = allocator,
+                .start = false,
+            };
+        }
+
+        pub fn deinit(self: Self) void {
+            self.allocator.free(self.buf);
+            self.allocator.free(self.indexes);
+        }
+
+        pub fn next(self: *Self) ?[]T {
+            if (self.start) {
+                var p = self.indexes.len - 1;
+                self.indexes[p] += 1;
+                while (p > 0 and self.indexes[p] == self.data.len) {
+                    self.indexes[p] = 0;
+                    self.indexes[p-1] += 1;
+                    p -= 1;
+                }
+                if (p==0 and self.indexes[p] == self.data.len)
+                    return null;
+            }
+            else
+                self.start = true;
+
+            for (self.indexes, 0..) |i, b| {
+                self.buf[b] = self.data[i];
+            }
+            return self.buf;
+        }
+    };
+}
+
+pub fn product(comptime T: type, data: []const T, repeat: usize, allocator: std.mem.Allocator) !productIterator(T) {
+    return try productIterator(T).init(data, repeat, allocator);
+}
