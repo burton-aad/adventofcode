@@ -45,7 +45,12 @@ pub fn free_lines(lines: std.ArrayList([]u8)) void {
     lines.deinit();
 }
 
-fn productIterator(comptime T: type) type {
+const combinatorType = enum {
+    product,
+    combine,
+};
+
+fn combinatoricIterator(comptime T: type) type {
     return struct {
         const Self = @This();
 
@@ -54,19 +59,24 @@ fn productIterator(comptime T: type) type {
         indexes: []usize,
         allocator: std.mem.Allocator,
         start: bool,
+        ctype: combinatorType,
 
-        pub fn init(data: []const T, repeat: usize, allocator: std.mem.Allocator) !Self {
+        pub fn init(data: []const T, repeat: usize, ctype: combinatorType, allocator: std.mem.Allocator) !Self {
             const buf = try allocator.alloc(T, repeat);
             errdefer allocator.free(buf);
             const indexes = try allocator.alloc(usize, repeat);
             errdefer allocator.free(indexes);
-            @memset(indexes, 0);
+            switch (ctype) {
+                combinatorType.product => @memset(indexes, 0),
+                combinatorType.combine => for (indexes, 0..) |*ind, i| { ind.* = i; },
+            }
             return .{
                 .data = data,
                 .buf = buf,
                 .indexes = indexes,
                 .allocator = allocator,
                 .start = false,
+                .ctype = ctype,
             };
         }
 
@@ -75,16 +85,40 @@ fn productIterator(comptime T: type) type {
             self.allocator.free(self.indexes);
         }
 
+        fn next_prod(self: *Self) bool {
+            // return True for last element.
+            var p = self.indexes.len - 1;
+            self.indexes[p] += 1;
+            while (p > 0 and self.indexes[p] == self.data.len) {
+                self.indexes[p] = 0;
+                self.indexes[p-1] += 1;
+                p -= 1;
+            }
+            return (p==0 and self.indexes[p] == self.data.len);
+        }
+
+        fn next_comb(self: *Self) bool {
+            // return True for last element.
+            var p = self.indexes.len - 1;
+            self.indexes[p] += 1;
+            while (p > 0 and self.indexes[p] == self.data.len - self.indexes.len + p + 1) {
+                self.indexes[p-1] += 1;
+                p -= 1;
+            }
+            for (p+1..self.indexes.len) |i| {
+                self.indexes[i] = self.indexes[i-1] + 1;
+            }
+            return (p==0 and self.indexes[p] == self.data.len - self.indexes.len + 1);
+        }
+
         pub fn next(self: *Self) ?[]T {
             if (self.start) {
-                var p = self.indexes.len - 1;
-                self.indexes[p] += 1;
-                while (p > 0 and self.indexes[p] == self.data.len) {
-                    self.indexes[p] = 0;
-                    self.indexes[p-1] += 1;
-                    p -= 1;
-                }
-                if (p==0 and self.indexes[p] == self.data.len)
+                if (
+                    switch (self.ctype) {
+                        combinatorType.product => self.next_prod(),
+                        combinatorType.combine => self.next_comb(),
+                    }
+                )
                     return null;
             }
             else
@@ -98,6 +132,10 @@ fn productIterator(comptime T: type) type {
     };
 }
 
-pub fn product(comptime T: type, data: []const T, repeat: usize, allocator: std.mem.Allocator) !productIterator(T) {
-    return try productIterator(T).init(data, repeat, allocator);
+pub fn product(comptime T: type, data: []const T, repeat: usize, allocator: std.mem.Allocator) !combinatoricIterator(T) {
+    return try combinatoricIterator(T).init(data, repeat, combinatorType.product, allocator);
+}
+
+pub fn combine(comptime T: type, data: []const T, repeat: usize, allocator: std.mem.Allocator) !combinatoricIterator(T) {
+    return try combinatoricIterator(T).init(data, repeat, combinatorType.combine, allocator);
 }
