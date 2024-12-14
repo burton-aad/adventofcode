@@ -18,6 +18,10 @@ pub fn Counter(comptime T: type, array: []T, alloc: std.mem.Allocator) !std.Auto
     return map;
 }
 
+pub fn diff(comptime T: type, a: T, b: T) T {
+    return if (a > b) a-b else b-a;
+}
+
 pub fn int(comptime T: type, str: []const u8) !T
 {
     if (std.mem.startsWith(u8, str, "0x"))
