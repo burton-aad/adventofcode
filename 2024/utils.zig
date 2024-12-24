@@ -54,7 +54,7 @@ const combinatorType = enum {
     combine,
 };
 
-fn combinatoricIterator(comptime T: type) type {
+fn combinatoricIterator(comptime T: type, comptime ctype: combinatorType) type {
     return struct {
         const Self = @This();
 
@@ -62,10 +62,9 @@ fn combinatoricIterator(comptime T: type) type {
         buf: []T,
         indexes: []usize,
         allocator: std.mem.Allocator,
-        start: bool,
-        ctype: combinatorType,
+        start: bool = false,
 
-        pub fn init(data: []const T, repeat: usize, ctype: combinatorType, allocator: std.mem.Allocator) !Self {
+        pub fn init(data: []const T, repeat: usize, allocator: std.mem.Allocator) !Self {
             const buf = try allocator.alloc(T, repeat);
             errdefer allocator.free(buf);
             const indexes = try allocator.alloc(usize, repeat);
@@ -79,8 +78,6 @@ fn combinatoricIterator(comptime T: type) type {
                 .buf = buf,
                 .indexes = indexes,
                 .allocator = allocator,
-                .start = false,
-                .ctype = ctype,
             };
         }
 
@@ -118,7 +115,7 @@ fn combinatoricIterator(comptime T: type) type {
         pub fn next(self: *Self) ?[]T {
             if (self.start) {
                 if (
-                    switch (self.ctype) {
+                    switch (ctype) {
                         combinatorType.product => self.next_prod(),
                         combinatorType.combine => self.next_comb(),
                     }
@@ -136,10 +133,10 @@ fn combinatoricIterator(comptime T: type) type {
     };
 }
 
-pub fn product(comptime T: type, data: []const T, repeat: usize, allocator: std.mem.Allocator) !combinatoricIterator(T) {
-    return try combinatoricIterator(T).init(data, repeat, combinatorType.product, allocator);
+pub fn product(comptime T: type, data: []const T, repeat: usize, allocator: std.mem.Allocator) !combinatoricIterator(T, combinatorType.product) {
+    return try combinatoricIterator(T, combinatorType.product).init(data, repeat, allocator);
 }
 
-pub fn combine(comptime T: type, data: []const T, repeat: usize, allocator: std.mem.Allocator) !combinatoricIterator(T) {
-    return try combinatoricIterator(T).init(data, repeat, combinatorType.combine, allocator);
+pub fn combine(comptime T: type, data: []const T, repeat: usize, allocator: std.mem.Allocator) !combinatoricIterator(T, combinatorType.combine) {
+    return try combinatoricIterator(T, combinatorType.combine).init(data, repeat, allocator);
 }
