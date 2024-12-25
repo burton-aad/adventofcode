@@ -54,17 +54,25 @@ pub const combinatorType = enum {
     combine,
 };
 
-pub fn combinatoricIterator(comptime T: type, comptime ctype: combinatorType) type {
+pub fn combinatoricIteratorUnmanaged(comptime T: type, comptime ctype: combinatorType) type {
     return struct {
         const Self = @This();
 
         data: []const T,
         buf: []T,
         indexes: []usize,
-        allocator: std.mem.Allocator,
         start: bool = false,
 
-        pub fn init(data: []const T, repeat: usize, allocator: std.mem.Allocator) !Self {
+        pub fn initBuffer(data: []const T, buf: []T, indexes: []usize) Self {
+            std.debug.assert(buf.len > 0 and buf.len == indexes.len);
+            return .{
+                .data = data,
+                .buf = buf,
+                .indexes = indexes,
+            };
+        }
+
+        pub fn initAllocator(data: []const T, repeat: usize, allocator: std.mem.Allocator) std.mem.Allocator.Error!Self {
             const buf = try allocator.alloc(T, repeat);
             errdefer allocator.free(buf);
             const indexes = try allocator.alloc(usize, repeat);
@@ -73,8 +81,12 @@ pub fn combinatoricIterator(comptime T: type, comptime ctype: combinatorType) ty
                 .data = data,
                 .buf = buf,
                 .indexes = indexes,
-                .allocator = allocator,
             };
+        }
+
+        pub fn deinit(self: Self, allocator: std.mem.Allocator) void {
+            allocator.free(self.buf);
+            allocator.free(self.indexes);
         }
 
         pub fn reset(self: *Self) void {
@@ -84,11 +96,6 @@ pub fn combinatoricIterator(comptime T: type, comptime ctype: combinatorType) ty
         pub fn resetData(self: *Self, data: []const T) void {
             self.reset();
             self.data = data;
-        }
-
-        pub fn deinit(self: Self) void {
-            self.allocator.free(self.buf);
-            self.allocator.free(self.indexes);
         }
 
         fn next_prod(self: *Self) bool {
@@ -140,6 +147,31 @@ pub fn combinatoricIterator(comptime T: type, comptime ctype: combinatorType) ty
             }
             return self.buf;
         }
+    };
+}
+
+pub fn combinatoricIterator(comptime T: type, comptime ctype: combinatorType) type {
+    return struct {
+        const Self = @This();
+
+        iter: combinatoricIteratorUnmanaged(T, ctype),
+        allocator: std.mem.Allocator,
+
+        pub fn init(data: []const T, repeat: usize, allocator: std.mem.Allocator) !Self {
+            const buf = try allocator.alloc(T, repeat);
+            errdefer allocator.free(buf);
+            const indexes = try allocator.alloc(usize, repeat);
+            errdefer allocator.free(indexes);
+            return .{
+                .iter = combinatoricIteratorUnmanaged(T, ctype).initBuffer(data, buf, indexes),
+                .allocator = allocator,
+            };
+        }
+
+        pub fn deinit(self: Self) void { self.iter.deinit(self.allocator); }
+        pub fn reset(self: *Self) void { self.iter.reset(); }
+        pub fn resetData(self: *Self, data: []const T) void { self.iter.resetData(data); }
+        pub fn next(self: *Self) ?[]T { return self.iter.next(); }
     };
 }
 
