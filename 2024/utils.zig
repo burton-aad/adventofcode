@@ -49,12 +49,12 @@ pub fn free_lines(lines: std.ArrayList([]u8)) void {
     lines.deinit();
 }
 
-const combinatorType = enum {
+pub const combinatorType = enum {
     product,
     combine,
 };
 
-fn combinatoricIterator(comptime T: type, comptime ctype: combinatorType) type {
+pub fn combinatoricIterator(comptime T: type, comptime ctype: combinatorType) type {
     return struct {
         const Self = @This();
 
@@ -69,16 +69,21 @@ fn combinatoricIterator(comptime T: type, comptime ctype: combinatorType) type {
             errdefer allocator.free(buf);
             const indexes = try allocator.alloc(usize, repeat);
             errdefer allocator.free(indexes);
-            switch (ctype) {
-                combinatorType.product => @memset(indexes, 0),
-                combinatorType.combine => for (indexes, 0..) |*ind, i| { ind.* = i; },
-            }
             return .{
                 .data = data,
                 .buf = buf,
                 .indexes = indexes,
                 .allocator = allocator,
             };
+        }
+
+        pub fn reset(self: *Self) void {
+            self.start = false;
+        }
+
+        pub fn resetData(self: *Self, data: []const T) void {
+            self.reset();
+            self.data = data;
         }
 
         pub fn deinit(self: Self) void {
@@ -122,8 +127,13 @@ fn combinatoricIterator(comptime T: type, comptime ctype: combinatorType) type {
                 )
                     return null;
             }
-            else
+            else {
+                switch (ctype) {
+                    combinatorType.product => @memset(self.indexes, 0),
+                    combinatorType.combine => for (self.indexes, 0..) |*ind, i| { ind.* = i; },
+                }
                 self.start = true;
+            }
 
             for (self.indexes, 0..) |i, b| {
                 self.buf[b] = self.data[i];
