@@ -51,8 +51,10 @@ args = parser.parse_args()
 k = get_keys(args.salt)
 print("end k", k)
 print("Cas 1: 64 ->", k[63])
+print("Part 1:", k[63][0])
 
 # part 2
 k = get_keys(args.salt, h2)
 print("end k", k)
 print("Cas 2: 64 ->", k[63])
+print("Part 2:", k[63][0])

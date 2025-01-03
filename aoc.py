@@ -24,8 +24,16 @@ class Runner:
         self.day = prog.parent.name
         self.rc: int = None
         self.time: Time = Time(0)
-        self.part1: str = "N/A"
-        self.part2: str = "N/A"
+        self._part1: str = None
+        self._part2: str = None
+
+    @property
+    def part1(self):
+        return self._part1 or "N/A"
+
+    @property
+    def part2(self):
+        return self._part2 or "N/A"
 
     def compile(self):
         pass
@@ -44,11 +52,17 @@ class Runner:
             cwd=self.prog.parent,
         )
 
+        extract_part = lambda l: l.decode().split(":", 1)[1].strip()
+
         async for l in proc.stdout:
             if l.startswith(b"Part 1:"):
-                self.part1 = l.decode().split(":", 1)[1].strip()
-            if l.startswith(b"Part 2:"):
-                self.part2 = l.decode().split(":", 1)[1].strip()
+                self._part1 = extract_part(l)
+            elif l.startswith(b"Part 2:"):
+                self._part2 = extract_part(l)
+            elif self._part1 is None and b":" in l:
+                self._part1 = extract_part(l)
+            elif self._part2 is None and b":" in l:
+                self._part2 = extract_part(l)
 
         await proc.wait()
         self.rc = proc.returncode
@@ -133,9 +147,7 @@ def main():
     else:
         days = sorted(d for d in year.iterdir() if d.is_dir())
 
-    r = run(days)
-    print(r)
-    print_table(r)
+    print_table(run(days))
 
 if __name__=="__main__":
     main()

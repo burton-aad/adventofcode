@@ -139,8 +139,10 @@ if __name__ == "__main__":
     r = regs(prog, a=7)
     r.run()
     print(r)
+    print("Part 1:", r.regs["a"])
 
     r = regs(prog, a=12)
     r.run()
     print(r)
+    print("Part 2:", r.regs["a"])
 

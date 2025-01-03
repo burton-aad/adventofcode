@@ -97,9 +97,9 @@ if __name__ == "__main__":
     sc = scrambler("abcdefgh")
     for l in process:
         sc.parse(l)
-    print(sc.word, "->", sc)
+    print("scramble", sc.word, ":", sc)
 
     sc = scrambler("fbgdceah")
     for l in reversed(process):
         sc.parse_reverse(l)
-    print(sc, "<-", sc.word)
+    print("un-scramble", sc, ":", sc.word)

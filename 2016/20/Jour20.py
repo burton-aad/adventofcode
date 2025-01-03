@@ -41,7 +41,7 @@ blacklist = make_blacklist("input")
 ip = reverse_list(blacklist, 2**32-1)
 # print(ip)
 
-print("low", ip[0][0])
+print("Part 1:", ip[0][0])
 
 somme = 0
 for s,e in ip:

@@ -53,7 +53,7 @@ while l and pos != (3, 3):
     for x,y,m in possible_path(pos, list_open(path)):
         l.append(((pos[0]+x, pos[1]+y), path+m))
 
-print(path[:8], path[8:])
+print("Part 1:", path[8:])
 
 test_4 = "ihgpwlah"
 pos = (0,0)
@@ -68,3 +68,4 @@ while l:
     # print(len(l))
 
 print(lpath[:8], len(lpath[8:]), lpath[8:])
+print("Part 2:", len(lpath[8:]))

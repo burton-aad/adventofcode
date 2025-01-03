@@ -20,4 +20,5 @@ while n > 2:
     n //= 2
     t += 1
 
-print(first[0], first[1] + last[1])
+print("Part 1:", first[0])
+print("Part 2:", first[1] + last[1])

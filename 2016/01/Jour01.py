@@ -6,7 +6,7 @@ HORZ = 0
 VERT = 1
 pos = (0, 0)
 all_pos = []
-check_cross = True
+cross_pos = None
 axe = 'N'
 rose = "NESW"
 move = {
@@ -17,20 +17,19 @@ move = {
 }
 
 def input_move(turn, length):
-    global axe, pos, all_pos, check_cross
+    global axe, pos, all_pos, cross_pos
     i = rose.index(axe)
     if turn == 'R':
         i = (i+1) % len(rose)
     else: # turn == 'L'
         i = (i-1) % len(rose)
     axe = rose[i]
-    if check_cross:
+    if cross_pos is None:
         old_pos = pos
         for i in range(length):
             new_pos = move[axe](old_pos, i)
             if new_pos in all_pos:
-                print("First cross at", new_pos, ":", abs(new_pos[0]) + abs(new_pos[1]), "Blocks away")
-                check_cross = False
+                cross_pos = new_pos
                 break
             else:
                 all_pos.append(new_pos)
@@ -41,7 +40,8 @@ def main(input_txt):
         # print("move :", m[0], int(m[1:]))
         input_move(m[0], int(m[1:]))
     # print(pos)
-    print("The Easter Bunny HQ is", abs(pos[0]) + abs(pos[1]), "Blocks away")
+    print("Easter Bunny HQ :", abs(pos[0]) + abs(pos[1]), "Blocks away")
+    print("First cross at", cross_pos, ":", abs(cross_pos[0]) + abs(cross_pos[1]), "Blocks away")
 
 if __name__=="__main__":
     parser = argparse.ArgumentParser(description='AoC 2016 - Jour 01')
