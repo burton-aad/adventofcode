@@ -9,14 +9,21 @@ from pathlib import Path
 from typing import List
 
 CWD = Path(__file__).parent
-NS_TO_MS = 1_000_000
+
+class Time:
+    def __init__(self, time_ns):
+        self.time_ns = time_ns
+
+    @property
+    def ms(self):
+        return self.time_ns // 1_000_000
 
 class Runner:
     def __init__(self, prog: Path):
         self.prog = prog
         self.day = prog.parent.name
         self.rc: int = None
-        self.time_ns: int = 0
+        self.time: Time = Time(0)
         self.part1: str = "N/A"
         self.part2: str = "N/A"
 
@@ -29,7 +36,7 @@ class Runner:
     def _run_exec(self, prog: Path, *args):
         start = time.time_ns()
         asyncio.run(self._async_run(prog, args))
-        self.time_ns = time.time_ns() - start
+        self.time = Time(time.time_ns() - start)
 
     async def _async_run(self, prog: Path, args = [], save_run=True):
         proc = await asyncio.create_subprocess_exec(
@@ -48,7 +55,7 @@ class Runner:
 
     def __repr__(self):
         return "Runner({}, time={}, rc={}, part1={!r}, part2={!r})".format(
-            self.prog.name, self.time_ns // NS_TO_MS, self.rc, self.part1, self.part2)
+            self.prog.name, self.time.ms, self.rc, self.part1, self.part2)
 
 
 class Python(Runner):
@@ -102,13 +109,13 @@ def print_table(runs: List[Runner]):
     for r in runs:
         align[1] = max(align[1], len(r.part1))
         align[2] = max(align[2], len(r.part2))
-        align[3] = max(align[3], len("{}".format(r.time_ns // NS_TO_MS)))
+        align[3] = max(align[3], len("{}".format(r.time.ms)))
     length = sum(align) + len(align) * 3 - 1
     print("|".join("{:^{}}".format(c, a+2) for c, a in zip(cols, align)))
     print("-" * length)
     for r in runs:
         print("|".join("{:^{}}".format(c, a+2)
-                       for c, a in zip([r.day, r.part1, r.part2, r.time_ns // NS_TO_MS], align)))
+                       for c, a in zip([r.day, r.part1, r.part2, r.time.ms], align)))
 
 def main():
     years = sorted(d.name for d in CWD.iterdir() if len(d.name) == 4 and d.name.startswith("20"))
