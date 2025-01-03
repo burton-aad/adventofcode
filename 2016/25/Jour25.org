@@ -110,7 +110,7 @@ On cherche a pour que la deuxième boucle donne :
       t = []
       while a != 0:
           c = a % 2
-          a = a/2
+          a = a//2
           t.append(c)
       return t
 
@@ -129,7 +129,7 @@ On cherche a pour que la deuxième boucle donne :
   while not is_valid_clock(t):
       x += 1
       t = make_clock(x)
-  print x
+  print(x)
 #+END_SRC
 
 #+RESULTS:
