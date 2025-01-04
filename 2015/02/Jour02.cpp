@@ -28,6 +28,7 @@ int main(int argc, char **argv)
 		ribbon += 2*vec[0] + 2*vec[1] + l*w*h;
 	}
 
-	std::cout << "paper : " << paper << ", ribbon " << ribbon << std::endl;
+	std::cout << "paper : " << paper << std::endl;
+	std::cout << "ribbon : " << ribbon << std::endl;
 	return 0;
 }

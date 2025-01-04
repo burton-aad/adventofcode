@@ -77,11 +77,13 @@ int main(int argc, char **argv)
 	for (auto c : h5)
 		std::cout << std::setw(2) << std::setfill('0') << std::hex << int(c);
 	std::cout << std::endl;
+	std::cout << "Part 1: " << std::dec << five << std::endl;
 
 	std::cout << "number for 6 zeros : " << std::dec << six << " - ";
 	for (auto c : h)
 		std::cout << std::setw(2) << std::setfill('0') << std::hex << int(c);
 	std::cout << std::endl;
+	std::cout << "Part 2: " << std::dec << six << std::endl;
 
 	return 0;
 }

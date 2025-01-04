@@ -84,8 +84,8 @@ class Awk(Runner):
         self._run_exec("awk", "-f", self.prog, "--", "input")
 
 class C(Runner):
-    def __init__(self, prog):
-        super().__init__(prog)
+    def __init__(self, prog, *args, **kwargs):
+        super().__init__(prog, *args, **kwargs)
         self.prog = self.prog.with_suffix('')
 
     def compile(self):
@@ -106,6 +106,7 @@ class ELisp(Runner):
 run_formats = {
     ".py": Python,
     ".c": C,
+    ".cpp": C,
     ".awk": Awk,
     ".el": ELisp,
 }

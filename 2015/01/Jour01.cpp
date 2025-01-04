@@ -23,6 +23,7 @@ int main(int argc, char **argv)
 		}
 	}
 
-	std::cout << "part 1 : " << floor << ", part 2 : " << down_floor << std::endl;
+	std::cout << "Part 1: " << floor << std::endl;
+	std::cout << "Part 2: " << down_floor << std::endl;
 	return 0;
 }

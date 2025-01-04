@@ -73,7 +73,8 @@ int main(int argc, char **argv)
 		count2 += is_nice2(line);
 	}
 
-	std::cout << "number of nice strings : 1 - " << count1 << ", 2 - " << count2 << std::endl;
+	std::cout << "Part 1 : " << count1 << std::endl;
+	std::cout << "Part 2 : " << count2 << std::endl;
 
 	return 0;
 }
