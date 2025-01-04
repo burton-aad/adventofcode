@@ -51,6 +51,6 @@
                    (buffer-substring (point-min) (point-max))))
          (input (mapcar #'string-to-number (split-string input-s "\t" t "\n")))
          (rep (jour6 input)))
-    (message "Part 1: %d" (cadr rep))
-    (message "Part 2: %d" (car rep))
+    (princ (format "Part 1: %d\n" (cadr rep)))
+    (princ (format "Part 2: %d\n" (car rep)))
   ))

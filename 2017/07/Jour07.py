@@ -72,4 +72,5 @@ if __name__=="__main__":
         else:
             raise RuntimeError("Invalid tree")
 
-    print(f"Part 2: {r} is {r.weight}, should be {ref-r.wgt()+r.weight}")
+    print(f"{r} is {r.weight}, should be {ref-r.wgt()+r.weight}")
+    print(f"Part 2: {ref-r.wgt()+r.weight}")

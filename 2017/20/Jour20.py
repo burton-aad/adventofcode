@@ -68,7 +68,8 @@ def test():
 
 def jour20(parts):
     p = min(parts, key=lambda x: sum(map(abs, x.a)))
-    print("Part 1: closest index {} -> {}".format(p.index, p.dist()))
+    print("closest index {} -> {}".format(p.index, p.dist()))
+    print("Part 1:", p.index)
 
     for i in range(150):
         mapl(Particule.update, parts)

@@ -49,7 +49,7 @@
     ;; partie 1
     (let* ((input (mapcar #'string-to-number (split-string input-s "," t "\n")))
            (l (loop10 n input 1)))
-      (message (format "Part 1: %d" (* (car l) (cadr l)))))
+      (princ (format "Part 1: %d\n" (* (car l) (cadr l)))))
 
     ;; partie 2
     (let ((hash (knot-hash input-s)))
@@ -63,5 +63,5 @@
 
 (if (< (length argv) 2)
     (message "Usage: Jour10.el <input file>")
-  (message "Part 2: %s" (jour10 256 (cadr argv))))
+  (princ (format "Part 2: %s\n" (jour10 256 (cadr argv)))))
 

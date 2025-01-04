@@ -19,13 +19,14 @@ class Time:
         return self.time_ns // 1_000_000
 
 class Runner:
-    def __init__(self, prog: Path):
+    def __init__(self, prog: Path, verbose: bool = False):
         self.prog = prog
         self.day = prog.parent.name
         self.rc: int = None
         self.time: Time = Time(0)
         self._part1: str = None
         self._part2: str = None
+        self._verbose = verbose
 
     @property
     def part1(self):
@@ -55,6 +56,8 @@ class Runner:
         extract_part = lambda l: l.decode().split(":", 1)[1].strip()
 
         async for l in proc.stdout:
+            if self._verbose:
+                print(l.decode().strip())
             if l.startswith(b"Part 1:"):
                 self._part1 = extract_part(l)
             elif l.startswith(b"Part 2:"):
@@ -93,14 +96,21 @@ class C(Runner):
     def run(self):
         self._run_exec(self.prog)
 
+class ELisp(Runner):
+    def run(self):
+        if (self.prog.parent / "input").is_file():
+            self._run_exec("emacs", "-Q", "--script", self.prog, "--", "input")
+        else:
+            self._run_exec("emacs", "-Q", "--script", self.prog)
 
 run_formats = {
     ".py": Python,
     ".c": C,
     ".awk": Awk,
+    ".el": ELisp,
 }
 
-def run(days):
+def run(days, verbose=False):
     r = []
     for i, d in enumerate(days):
         print("{} / {}".format(i+1, len(days)))
@@ -108,7 +118,7 @@ def run(days):
             if f.name == ".ignore":
                 break
             elif f.name.startswith("Jour{:02}.".format(d.name)) and f.suffix in run_formats:
-                runner = run_formats[f.suffix](f)
+                runner = run_formats[f.suffix](f, verbose)
                 runner.compile()
                 runner.run()
                 r.append(runner)
@@ -137,6 +147,7 @@ def main():
     parser = argparse.ArgumentParser(description='Simple interface to run AoC pprograms')
     parser.add_argument("year", choices=years, help="Which year to run")
     parser.add_argument("-d", "--day", type=int, help="Run a single day of the year")
+    parser.add_argument("-v", "--verbose", action="store_true", help="Let prog output be printed")
     args = parser.parse_args()
 
     year = CWD/"{}".format(args.year)
@@ -147,7 +158,11 @@ def main():
     else:
         days = sorted(d for d in year.iterdir() if d.is_dir())
 
-    print_table(run(days))
+    r = run(days, args.verbose)
+    if args.verbose:
+        print(r)
+    else:
+        print_table(r)
 
 if __name__=="__main__":
     main()

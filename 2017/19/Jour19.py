@@ -56,4 +56,5 @@ if __name__ == "__main__":
         # pprint(lines)
 
     step, t = main(lines)
-    print(step, "steps ->", "".join(t))
+    print("Part 1:", "".join(t))
+    print("Part 2:", step, "steps")

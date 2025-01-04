@@ -23,16 +23,18 @@
     (apply '+ (funcall func l))))
 
 
-(message "Part 1: %d"
+(princ
+ (format "Part 1: %d\n"
          (jour1 'filtre-doublon
                 (with-temp-buffer
                   (insert-file-contents-literally "input")
-                  (buffer-substring (point-min) (point-max)))))
+                  (buffer-substring (point-min) (point-max))))))
 ;; 1102
 
-(message "Part 2: %d"
+(princ
+ (format "Part 2: %d\n"
          (jour1 'filtre-demitour
                 (with-temp-buffer
                   (insert-file-contents-literally "input")
-                  (buffer-substring (point-min) (point-max)))))
+                  (buffer-substring (point-min) (point-max))))))
 ;; 1076

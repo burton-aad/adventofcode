@@ -52,11 +52,14 @@ def jour24(G):
             fifo.extend(nbs)
     # pprint(bgs)
 
-    print("Part 1:", max(bgs, key=lambda x: x.strength))
+    m = max(bgs, key=lambda x: x.strength)
+    print(m)
+    print("Part 1:", m.strength)
 
     m = max(bgs, key=lambda x: len(x.pts))
     m = max(filter(lambda x: len(x.pts) == len(m.pts), bgs), key=lambda x: x.strength)
-    print("Part 2:", m)
+    print(m)
+    print("Part 2:", m.strength)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='AoC 2017 - Jour 24')

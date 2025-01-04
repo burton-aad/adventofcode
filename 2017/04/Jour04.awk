@@ -3,6 +3,18 @@
 # première partie : grep -Evc '(\<[a-z]+\>).*\<\1\>' input
 
 // {
+    # search repeat
+	delete t
+	c = 0
+	for (i=1; i<=NF; i++) {
+		if ($i in t)
+			break
+		t[$i] = 1
+		c++
+	}
+	if (c == NF)
+		sum1 += 1
+
     # search anagram
 	delete t
 	for (i=1; i<=NF; i++) {
@@ -21,4 +33,7 @@
 	sum += 1
 }
 
-END{ print sum }
+END{
+	print "Part 1:", sum1
+	print "Part 2:", sum
+}
