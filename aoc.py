@@ -21,6 +21,7 @@ class Time:
 class Runner:
     def __init__(self, prog: Path, verbose: bool = False):
         self.prog = prog
+        self.dir = prog.parent
         self.day = prog.parent.name
         self.rc: int = None
         self.time: Time = Time(0)
@@ -47,28 +48,26 @@ class Runner:
         asyncio.run(self._async_run(prog, args))
         self.time = Time(time.time_ns() - start)
 
-    async def _async_run(self, prog: Path, args = [], save_run=True):
+    async def _async_run(self, prog: Path, args = []):
         proc = await asyncio.create_subprocess_exec(
             prog, *args, stdout=asyncio.subprocess.PIPE,
-            cwd=self.prog.parent,
+            cwd=self.dir,
         )
 
         extract_part = lambda l: l.decode().split(":", 1)[1].strip()
-
         async for l in proc.stdout:
             if self._verbose:
                 print(l.decode().strip())
-            if l.startswith(b"Part 1:"):
+            if l.startswith(b"Part 1"):
                 self._part1 = extract_part(l)
-            elif l.startswith(b"Part 2:"):
+            elif l.startswith(b"Part 2"):
                 self._part2 = extract_part(l)
             elif self._part1 is None and b":" in l:
                 self._part1 = extract_part(l)
             elif self._part2 is None and b":" in l:
                 self._part2 = extract_part(l)
 
-        await proc.wait()
-        self.rc = proc.returncode
+        self.rc = await proc.wait()
 
     def __repr__(self):
         return "Runner({}, time={}, rc={}, part1={!r}, part2={!r})".format(
@@ -77,24 +76,11 @@ class Runner:
 
 class Python(Runner):
     def run(self):
-        self._run_exec(sys.executable, self.prog)
+        self._run_exec(sys.executable, "-u", self.prog)
 
 class Awk(Runner):
     def run(self):
         self._run_exec("awk", "-f", self.prog, "--", "input")
-
-class C(Runner):
-    def __init__(self, prog, *args, **kwargs):
-        super().__init__(prog, *args, **kwargs)
-        self.prog = self.prog.with_suffix('')
-
-    def compile(self):
-        ytd = self.prog.parents[1]
-        subprocess.run(["make", self.prog.relative_to(ytd).with_suffix('')],
-                       cwd=ytd)
-
-    def run(self):
-        self._run_exec(self.prog)
 
 class ELisp(Runner):
     def run(self):
@@ -103,12 +89,42 @@ class ELisp(Runner):
         else:
             self._run_exec("emacs", "-Q", "--script", self.prog)
 
+class C(Runner):
+    def __init__(self, prog, *args, **kwargs):
+        super().__init__(prog, *args, **kwargs)
+        self.prog = self.prog.with_suffix('')
+
+    def compile(self):
+        subprocess.run(["make", self.prog.relative_to(self.dir).with_suffix('')],
+                       cwd=self.dir)
+
+    def run(self):
+        self._run_exec(self.prog)
+
+class Rs(C):
+    def compile(self):
+        subprocess.run(["rustc", self.prog.relative_to(self.dir).with_suffix('.rs')],
+                       cwd=self.dir)
+
+class Rust(Runner):
+    def __init__(self, prog, *args, **kwargs):
+        super().__init__(prog, *args, **kwargs)
+        self.prog = self.prog.parent / "target" / "debug" / "Jour{}".format(self.prog.parent.name)
+
+    def compile(self):
+        subprocess.run(["cargo", "build"], cwd=self.dir)
+
+    def run(self):
+        self._run_exec(self.prog)
+
+
 run_formats = {
     ".py": Python,
     ".c": C,
     ".cpp": C,
     ".awk": Awk,
     ".el": ELisp,
+    ".rs": Rs,
 }
 
 def run(days, verbose=False):
@@ -120,12 +136,16 @@ def run(days, verbose=False):
                 break
             elif f.name.startswith("Jour{:02}.".format(d.name)) and f.suffix in run_formats:
                 runner = run_formats[f.suffix](f, verbose)
-                runner.compile()
-                runner.run()
-                r.append(runner)
+                break
+            elif f.name == "Cargo.toml":
+                runner = Rust(f, verbose)
                 break
         else:
             print("Warning: No source found to run {}".format(d))
+            continue
+        runner.compile()
+        runner.run()
+        r.append(runner)
     return r
 
 def print_table(runs: List[Runner]):

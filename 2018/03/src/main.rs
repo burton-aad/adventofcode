@@ -114,5 +114,7 @@ fn main() {
     for r in claims.iter() {
         score.push(claims.iter().map(|ref rec| r.overlap(&rec)).sum());
     }
-    println!("Rect with no overlap: {:?}", claims[score.iter().position(|&v| v == 0).unwrap()]);
+	let rno = &claims[score.iter().position(|&v| v == 0).unwrap()];
+    println!("Rect with no overlap: {:?}", rno);
+    println!("Part 2: {:?}", rno.id);
 }

@@ -37,10 +37,21 @@ class Grid:
 
 def jour11(grid_serial):
     g = Grid(grid_serial)
-    print("part 1: region {} with power {}".format(*g.find_max()[::-1]))
-    t = [g.find_max((n+1, n+1)) for n in range(300)]
-    p2 = max(t, key=lambda x: x[0])
-    print("part 2: region {}, size {}, with power {}".format(p2[1], t.index(p2)+1, p2[0]))
+    p1 = g.find_max()[::-1]
+    print("region {} with power {}".format(*p1))
+    print("Part 1: {},{}".format(*p1[0]))
+    p2 = [0]
+    size = 0
+    for n in range(300):
+        t = g.find_max((n+1, n+1))
+        print(t[0])
+        if t[0] == 0:
+            break
+        if t[0] > p2[0]:
+            p2 = t
+            size = n+1
+    print("largest: region {}, size {}, with power {}".format(p2[1], size, p2[0]))
+    print("Part 2: {},{},{}".format(*p2[1], size))
 
 
 if __name__ == "__main__":

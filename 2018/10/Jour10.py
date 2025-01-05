@@ -57,7 +57,7 @@ def jour10(pts):
         tick += 1
     list(map(Point.untick, pts)) # we gone one too far
     draw(pts)
-    print("tick {}".format(tick))
+    print("Part 2 (tick) : {}".format(tick))
 
 
 if __name__ == "__main__":

@@ -33,8 +33,8 @@ def jour06(pts):
                 p2_size += 1
 
     # print(p1_sizes)
-    print("part 1 :", max(s for s in p1_sizes if s is not None))
-    print("part 2 :", p2_size)
+    print("Part 1 :", max(s for s in p1_sizes if s is not None))
+    print("Part 2 :", p2_size)
 
 
 if __name__ == "__main__":

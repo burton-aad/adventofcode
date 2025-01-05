@@ -78,15 +78,17 @@ void jour2(std::ifstream& in)
 
 		for (auto vs : v) {
 			auto d = diff_s(vs, s);
-			if (d.size() == s.size()-1)
+			if (d.size() == s.size()-1) {
 				std::cout << "correct boxes : " << vs << ", " << s << " : " << d << std::endl;
+				std::cout << "Part 2: " << d << std::endl;
+			}
 		}
 		v.push_back(std::move(s));
 
 		in >> s;
 	}
 
-	std::cout << "checksum : " << dbl*tpl << std::endl;
+	std::cout << "Part 1 (checksum) : " << dbl*tpl << std::endl;
 }
 
 

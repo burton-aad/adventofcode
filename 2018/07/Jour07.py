@@ -65,12 +65,12 @@ def run_largeur_sort(roots, workers=1):
 
 def jour07(roots):
     n_order, _ = run_largeur_sort(roots)
-    print("part 1:", "".join(n_order))
+    print("Part 1:", "".join(n_order))
     for n in roots:
         n.reset()
 
     _, time = run_largeur_sort(roots, 5)
-    print("part 2: {} secs".format(time))
+    print("Part 2: {} secs".format(time))
 
 
 if __name__ == "__main__":

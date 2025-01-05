@@ -34,7 +34,7 @@ int main(int argc, char **argv)
 			freq += val;
 			if (!sec && s.find(freq) != s.end()) {
 				sec = true;
-				std::cout << "reaches twice : " << freq << std::endl;
+				std::cout << "Part 2 (reaches twice) : " << freq << std::endl;
 			}
 			s.insert(freq);
 			in >> val;
@@ -42,7 +42,7 @@ int main(int argc, char **argv)
 
 		if (!pre) {
 			pre = true;
-			std::cout << "frequence : " << freq << std::endl;
+			std::cout << "Part 1 (frequence) : " << freq << std::endl;
 		}
 	}
 

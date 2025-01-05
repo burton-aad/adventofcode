@@ -74,11 +74,11 @@ def jour04(shifts):
 
     grd1,slp1 = max(sleep.items(), key=lambda x : sum(x[1]))
     m1 = slp1.index(max(slp1))
-    print("part 1: guard {}, min {} -> {}".format(grd1, m1, int(grd1) * m1))
+    print("Part 1 (guard {}, min {}) : {}".format(grd1, m1, int(grd1) * m1))
 
     grd2,slp2 = max(sleep.items(), key=lambda x: max(x[1]))
     m2 = slp2.index(max(slp2))
-    print("part 2: guard {}, min {} -> {}".format(grd2, m2, int(grd2) * m2))
+    print("Part 2 (guard {}, min {}) : {}".format(grd2, m2, int(grd2) * m2))
     
 
 if __name__ == "__main__":
