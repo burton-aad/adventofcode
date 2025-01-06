@@ -37,6 +37,8 @@ class Intcode(object):
             self.orig_prog = prog[:]
         self.prog = self.orig_prog[:]
         self.pc = 0
+        self.capture_out = False
+        self.out = []
 
     def init(self, noun, verb):
         self.prog[1] = noun
@@ -67,14 +69,17 @@ class Intcode(object):
             pc += l+1
         return "\n".join(s)
 
-    def run(self, *input):
+    def run(self, *input, capture_out=False):
         self.input = list(reversed(input))
+        self.capture_out = capture_out
         while self.pc < len(self.prog):
             # print("prog: {}".format(self))
             params, opcode = self.get_op(self.pc)
             l, op = self.op[opcode]
             # print("op :", self.str_op(self.pc))
             op(params, *self.prog[self.pc+1:self.pc+l+1])
+        if capture_out:
+            return self.out
 
     def end(self, params):
         self.pc = len(self.prog) # this end the program
@@ -95,7 +100,10 @@ class Intcode(object):
         self.pc += 2
 
     def print_out(self, params, in_):
-        print(self.read_param(params[0], in_))
+        if self.capture_out:
+            self.out.append(self.read_param(params[0], in_))
+        else:
+            print(self.read_param(params[0], in_))
         self.pc += 2
 
     def jump_if_true(self, params, in_, val):

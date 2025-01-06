@@ -2,6 +2,7 @@
 
 from __future__ import print_function
 import sys
+import argparse
 
 class Position(object):
     def __init__(self, x, y):
@@ -72,9 +73,9 @@ def main(path1, path2):
 # main("R98,U47,R26,D63,R33,U87,L62,D20,R33,U53,R51", "U98,R91,D20,R16,D67,R40,U7,R15,U6,R7")
 
 if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        print("Usage : {} <input>".format(sys.argv[0]))
-        sys.exit(1)
-    with open(sys.argv[1]) as f:
+    parser = argparse.ArgumentParser(description='AoC 2019 - Jour 03')
+    parser.add_argument("input", nargs='?', default="input")
+    args = parser.parse_args()
+    with open(args.input) as f:
         p1, p2 = f.readlines()
     main(p1.strip(), p2.strip())

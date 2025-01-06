@@ -19,7 +19,7 @@ class Time:
         return self.time_ns // 1_000_000
 
 class Runner:
-    def __init__(self, prog: Path, verbose: bool = False):
+    def __init__(self, prog: Path):
         self.prog = prog
         self.dir = prog.parent
         self.day = prog.parent.name
@@ -27,7 +27,7 @@ class Runner:
         self.time: Time = Time(0)
         self._part1: str = None
         self._part2: str = None
-        self._verbose = verbose
+        self.verbose = False
 
     @property
     def part1(self):
@@ -56,7 +56,7 @@ class Runner:
 
         extract_part = lambda l: l.decode().split(":", 1)[1].strip()
         async for l in proc.stdout:
-            if self._verbose:
+            if self.verbose:
                 print(l.decode().strip())
             if l.startswith(b"Part 1"):
                 self._part1 = extract_part(l)
@@ -127,25 +127,28 @@ run_formats = {
     ".rs": Rs,
 }
 
-def run(days, verbose=False):
+def parse_days(year, day):
+    year = CWD/"{}".format(year)
+    if day:
+        days = [year/"{:02}".format(day)]
+        if not days[0].is_dir():
+            raise ValueError("Invalid day {}".format(day))
+    else:
+        days = sorted(d for d in year.iterdir() if d.is_dir())
+
     r = []
     for i, d in enumerate(days):
-        print("{} / {}".format(i+1, len(days)))
         for f in sorted(d.iterdir()):
             if f.name == ".ignore":
                 break
             elif f.name.startswith("Jour{:02}.".format(d.name)) and f.suffix in run_formats:
-                runner = run_formats[f.suffix](f, verbose)
+                r.append(run_formats[f.suffix](f))
                 break
             elif f.name == "Cargo.toml":
-                runner = Rust(f, verbose)
+                r.append(Rust(f))
                 break
         else:
             print("Warning: No source found to run {}".format(d))
-            continue
-        runner.compile()
-        runner.run()
-        r.append(runner)
     return r
 
 def report_table(runs: List[Runner]):
@@ -172,19 +175,16 @@ def main():
     parser.add_argument("-v", "--verbose", action="store_true", help="Let prog output be printed")
     args = parser.parse_args()
 
-    year = CWD/"{}".format(args.year)
-    if args.day:
-        days = [year/"{:02}".format(args.day)]
-        if not days[0].is_dir():
-            raise ValueError("Invalid day {}".format(args.day))
-    else:
-        days = sorted(d for d in year.iterdir() if d.is_dir())
-
-    r = run(days, args.verbose)
+    runners = parse_days(args.year, args.day)
+    for i, r in enumerate(runners):
+        print("{} / {}".format(i+1, len(runners)))
+        r.verbose = args.verbose
+        r.compile()
+        r.run()
     if args.verbose:
-        print(r)
+        print(runners)
     else:
-        report_table(r)
+        report_table(runners)
 
 if __name__=="__main__":
     main()

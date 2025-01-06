@@ -2,18 +2,17 @@
 
 from __future__ import print_function
 import sys, os
-
-sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
+import argparse
 from intcomp import Intcode
 
 
 def main(v):
     p = Intcode(v)
-    print("Part 1 :")
-    p.run(1)
+    r = p.run(1, capture_out=True)
+    print("Part 1 :", r[-1])
     p.reset()
-    print("\nPart 2 :")
-    p.run(5)
+    r = p.run(5, capture_out=True)
+    print("Part 2 :", r[-1])
 
 
 # main([1002, 4, 3, 4, 33])
@@ -21,9 +20,9 @@ def main(v):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        print("Usage : {} <input>".format(sys.argv[0]))
-        sys.exit(1)
-    with open(sys.argv[1]) as f:
+    parser = argparse.ArgumentParser(description='AoC 2019 - Jour 05')
+    parser.add_argument("input", nargs='?', default="input")
+    args = parser.parse_args()
+    with open(args.input) as f:
         v = [int(x) for x in f.read().strip().split(',')]
         main(v)

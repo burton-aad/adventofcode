@@ -3,8 +3,8 @@
 from __future__ import print_function
 import sys, os
 import itertools
+import argparse
 
-sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 from intcomp import Intcode
 
 def main(v):
@@ -29,9 +29,9 @@ def main(v):
 # main([1,1,1,4,99,5,6,0,99])
 
 if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        print("Usage : {} <input>".format(sys.argv[0]))
-        sys.exit(1)
-    with open(sys.argv[1]) as f:
+    parser = argparse.ArgumentParser(description='AoC 2019 - Jour 02')
+    parser.add_argument("input", nargs='?', default="input")
+    args = parser.parse_args()
+    with open(args.input) as f:
         v = [int(x) for x in f.read().strip().split(',')]
         main(v)
