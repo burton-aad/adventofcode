@@ -2,6 +2,7 @@
 
 import sys
 import re
+import argparse
 
 def validate(rule, v):
     (a, b), (c, d) = rule
@@ -39,7 +40,11 @@ def part2(rules, nearby, ticket):
     print("part 2:", v)
 
 if __name__=="__main__":
-    with open(sys.argv[1]) as f:
+    parser = argparse.ArgumentParser(description='AoC 2020 - Jour 16')
+    parser.add_argument("input", nargs='?', default="input")
+    args = parser.parse_args()
+
+    with open(args.input) as f:
         r = re.compile(r"(.+): (\d+)-(\d+) or (\d+)-(\d+)")
         rules = {}
         for l in iter(lambda: f.readline().strip(), ""):

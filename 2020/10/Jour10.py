@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import sys
+import argparse
 from itertools import tee, groupby
 from collections import Counter
 
@@ -31,6 +32,9 @@ def Jour10(joltage):
 
 
 if __name__=="__main__":
-    with open(sys.argv[1]) as f:
+    parser = argparse.ArgumentParser(description='AoC 2020 - Jour 10')
+    parser.add_argument("input", nargs='?', default="input")
+    args = parser.parse_args()
+    with open(args.input) as f:
         joltage = sorted(int(l) for l in f)
     Jour10([0] + joltage  + [joltage[-1]+3])

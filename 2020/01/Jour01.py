@@ -36,6 +36,8 @@ if __name__=="__main__":
         nums = [int(x) for x in f]
     nums.sort()
     l, r = find2(nums)
-    print("part 1: {} {} -> {}".format(l, r, l * r))
+    print("{} {} -> {}".format(l, r, l * r))
+    print("Part 1: {}".format(l * r))
     l, v, r = findn(nums, 3)
-    print("part 2: {} {} {} -> {}".format(l, v, r, l * v * r))
+    print("{} {} {} -> {}".format(l, v, r, l * v * r))
+    print("Part 2: {}".format(l * v * r))

@@ -33,5 +33,6 @@ BEGIN {RS="[ \n]"; FS=":"}
 
 END {
 	r += v == 0x7F; r2 += v2 == 0x7F
-	print "Part 1 : " r ", Part 2 : " r2
+	print "Part 1 : " r
+	print "Part 2 : " r2
 }

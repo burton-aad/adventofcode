@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import sys
+import argparse
 
 moves = {
     "e" : complex(2, 0),
@@ -41,6 +42,9 @@ def Jour24(tiles):
 
 
 if __name__=="__main__":
-    with open(sys.argv[1]) as f:
+    parser = argparse.ArgumentParser(description='AoC 2020 - Jour 24')
+    parser.add_argument("input", nargs='?', default="input")
+    args = parser.parse_args()
+    with open(args.input) as f:
         tiles = [l.strip() for l in f]
     Jour24(tiles)

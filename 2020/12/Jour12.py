@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import sys
+import argparse
 
 class C:
     def __init__(self, r, i):
@@ -53,7 +54,10 @@ def Jour12_2(insts):
 
 
 if __name__=="__main__":
-    with open(sys.argv[1]) as f:
+    parser = argparse.ArgumentParser(description='AoC 2020 - Jour 12')
+    parser.add_argument("input", nargs='?', default="input")
+    args = parser.parse_args()
+    with open(args.input) as f:
         insts = [(l[0], int(l[1:])) for l in f]
     Jour12_1(insts)
     Jour12_2(insts)

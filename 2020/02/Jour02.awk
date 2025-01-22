@@ -8,4 +8,7 @@ BEGIN{ FS="[- :]+" }
 	b += (match($4, "^.{" $1-1 "}" $3) + match($4, "^.{" $2-1 "}" $3)) == 1
 }
 
-END{print "Part 1 : " a ", Part 2 : " b}
+END{
+	print "Part 1 : " a
+	print "Part 2 : " b
+}

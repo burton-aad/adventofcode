@@ -2,6 +2,7 @@
 
 import sys
 import re
+import argparse
 from itertools import product
 
 mask_re = re.compile(r"mask = (.*)")
@@ -38,7 +39,10 @@ def v2(prog):
     print("Part 2:", sum(mem.values()))
 
 if __name__=="__main__":
-    with open(sys.argv[1]) as f:
+    parser = argparse.ArgumentParser(description='AoC 2020 - Jour 14')
+    parser.add_argument("input", nargs='?', default="input")
+    args = parser.parse_args()
+    with open(args.input) as f:
         prog = [l.strip() for l in f]
     v1(prog)
     v2(prog)

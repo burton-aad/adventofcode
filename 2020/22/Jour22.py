@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import sys
+import argparse
 from collections import deque
 from itertools import islice
 
@@ -40,8 +41,12 @@ def Part2(p1, p2, i=1):
 
 
 if __name__=="__main__":
+    parser = argparse.ArgumentParser(description='AoC 2020 - Jour 13')
+    parser.add_argument("input", nargs='?', default="input")
+    args = parser.parse_args()
+
     p1, p2 = [], []
-    with open(sys.argv[1]) as f:
+    with open(args.input) as f:
         for l in f:
             l = l.strip()
             if l == "Player 1:":

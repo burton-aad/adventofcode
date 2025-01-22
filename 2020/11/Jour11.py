@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import sys
+import argparse
 from itertools import product
 
 def voisins1(seats, i, j):
@@ -42,6 +43,9 @@ def Jour11(seats):
     print("Part 2:", sum(l.count("#") for l in r))
 
 if __name__=="__main__":
-    with open(sys.argv[1]) as f:
+    parser = argparse.ArgumentParser(description='AoC 2020 - Jour 11')
+    parser.add_argument("input", nargs='?', default="input")
+    args = parser.parse_args()
+    with open(args.input) as f:
         seats = [l.strip() for l in f]
     Jour11(seats)

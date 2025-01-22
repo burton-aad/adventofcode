@@ -2,6 +2,7 @@
 
 import sys
 import re
+import argparse
 
 ops = {
     None: lambda x, y: y,
@@ -56,7 +57,10 @@ def part2(l):
     return eval(l).val
 
 if __name__=="__main__":
-    with open(sys.argv[1]) as f:
+    parser = argparse.ArgumentParser(description='AoC 2020 - Jour 18')
+    parser.add_argument("input", nargs='?', default="input")
+    args = parser.parse_args()
+    with open(args.input) as f:
         opers = [l.strip() for l in f]
 
     print("Part 1:", sum(parse(o) for o in opers))

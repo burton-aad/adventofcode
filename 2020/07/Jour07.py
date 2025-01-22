@@ -2,6 +2,7 @@
 
 import sys
 import re
+import argparse
 
 def Jour07(f):
     d = {}
@@ -34,5 +35,8 @@ def Jour07(f):
     print("Part 2:", r-1)
 
 if __name__=="__main__":
-    with open(sys.argv[1]) as f:
+    parser = argparse.ArgumentParser(description='AoC 2020 - Jour 07')
+    parser.add_argument("input", nargs='?', default="input")
+    args = parser.parse_args()
+    with open(args.input) as f:
         Jour07(f)

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import sys
+import argparse
 
 def rfid_trans(val, subject):
     return (val * subject) % 20201227
@@ -13,7 +14,11 @@ def find_loop_size(target):
     return s
 
 if __name__=="__main__":
-    with open(sys.argv[1]) as f:
+    parser = argparse.ArgumentParser(description='AoC 2020 - Jour 25')
+    parser.add_argument("input", nargs='?', default="input")
+    args = parser.parse_args()
+
+    with open(args.input) as f:
         card = int(f.readline())
         door = int(f.readline())
     loop_card = find_loop_size(card)
@@ -22,5 +27,5 @@ if __name__=="__main__":
     v = 1
     for _ in range(loop_card):
         v = rfid_trans(v, door)
-    print(v)
+    print("Part 1:", v)
 

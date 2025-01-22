@@ -3,6 +3,7 @@
 import sys
 import re
 import collections
+import argparse
 from functools import reduce
 
 def Jour21(foods):
@@ -28,7 +29,10 @@ def Jour21(foods):
 
 
 if __name__=="__main__":
-    with open(sys.argv[1]) as f:
+    parser = argparse.ArgumentParser(description='AoC 2020 - Jour 21')
+    parser.add_argument("input", nargs='?', default="input")
+    args = parser.parse_args()
+    with open(args.input) as f:
         foods = []
         for l in f:
             l = re.findall(r"\w+", l)

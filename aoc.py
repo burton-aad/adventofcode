@@ -89,6 +89,10 @@ class ELisp(Runner):
         else:
             self._run_exec("emacs", "-Q", "--script", self.prog)
 
+class Bash(Runner):
+    def run(self):
+        self._run_exec("bash", self.prog, "input")
+
 class C(Runner):
     def __init__(self, prog, *args, **kwargs):
         super().__init__(prog, *args, **kwargs)
@@ -125,6 +129,7 @@ run_formats = {
     ".awk": Awk,
     ".el": ELisp,
     ".rs": Rs,
+    ".sh": Bash,
 }
 
 def parse_days(year, day):
@@ -152,19 +157,20 @@ def parse_days(year, day):
     return r
 
 def report_table(runs: List[Runner]):
-    cols = [" day", "Part 1", "Part 2", "Time"]
+    cols = [" day", "Part 1", "Part 2", "Time (ms)"]
     alen = [len(c) for c in cols]
     align = [">", "^", "^", ">"]
+    fmt = ["", "", "", ","]
     for r in runs:
         alen[1] = max(alen[1], len(r.part1))
         alen[2] = max(alen[2], len(r.part2))
-        alen[3] = max(alen[3], len("{}".format(r.time.ms)))
+        alen[3] = max(alen[3], len("{:{}}".format(r.time.ms, fmt[3])))
     length = sum(alen) + len(alen) * 3 - 1
     print(" | ".join("{:^{}}".format(c, a) for c, a in zip(cols, alen)))
     print("-" * length)
     for r in runs:
-        print(" | ".join("{:{}{}}".format(c, a, l)
-                         for c, a, l in zip([r.day, r.part1, r.part2, r.time.ms], align, alen)))
+        print(" | ".join("{:{}{}{}}".format(c, a, l, f)
+                         for c, f, a, l in zip([r.day, r.part1, r.part2, r.time.ms], fmt, align, alen)))
 
 def main():
     years = sorted(d.name for d in CWD.iterdir() if len(d.name) == 4 and d.name.startswith("20"))

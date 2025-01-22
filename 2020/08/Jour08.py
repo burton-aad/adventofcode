@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import sys
+import argparse
 
 class Ops:
     def __init__(self):
@@ -31,7 +32,7 @@ def run(prog):
 
 def Jour08(prog):
     ops = run(prog)
-    print("Part 1:", ops)
+    print("Part 1:", ops._acc)
 
     t = {"nop": "jmp", "jmp": "nop"}
     for i, (ins, _) in enumerate(prog):
@@ -41,12 +42,15 @@ def Jour08(prog):
         ops = run(prog)
         prog[i][0] = ins
         if ops.pc >= len(prog):
-            print("Part 2:", ops)
+            print("Part 2:", ops._acc)
             break
         
 
 
 if __name__=="__main__":
-    with open(sys.argv[1]) as f:
+    parser = argparse.ArgumentParser(description='AoC 2020 - Jour 08')
+    parser.add_argument("input", nargs='?', default="input")
+    args = parser.parse_args()
+    with open(args.input) as f:
         prog = [[i, int(x)] for i, x in iter(lambda: f.readline().split(), [])]
     Jour08(prog)

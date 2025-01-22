@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import sys
+import argparse
 from functools import reduce
 
 def part1(depart, ids):
@@ -25,7 +26,10 @@ def th_chinois(vals):
     return sum(a*e for (a, _),e in zip(vals, E)) % n
 
 if __name__=="__main__":
-    with open(sys.argv[1]) as f:
+    parser = argparse.ArgumentParser(description='AoC 2020 - Jour 13')
+    parser.add_argument("input", nargs='?', default="input")
+    args = parser.parse_args()
+    with open(args.input) as f:
         depart = int(f.readline())
         ids = [(int(t)-i, int(t)) for i, t in enumerate(f.readline().strip().split(",")) if t != "x"]
     part1(depart, ids)

@@ -5,8 +5,8 @@ import itertools
 import functools
 import math
 import re
+import argparse
 
-sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 from utils import sliding_window
 
 
@@ -170,7 +170,11 @@ def find_sea_monster(image, sea_monster):
 
 
 if __name__=="__main__":
-    with open(sys.argv[1]) as f:
+    parser = argparse.ArgumentParser(description='AoC 2020 - Jour 20')
+    parser.add_argument("input", nargs='?', default="input")
+    args = parser.parse_args()
+
+    with open(args.input) as f:
         tiles = [Tile(int(l.split()[1][:-1]), f) for l in f if l.strip()]
 
     # on suppose que l'input est sympa et qu'il n'y a pas de multiple possibilité

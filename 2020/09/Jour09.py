@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import sys
+import argparse
 from collections import deque
 from itertools import combinations
 
@@ -27,6 +28,10 @@ def Jour09(transmit, preambule=25):
 
 
 if __name__=="__main__":
-    with open(sys.argv[1]) as f:
+    parser = argparse.ArgumentParser(description='AoC 2020 - Jour 09')
+    parser.add_argument("input", nargs='?', default="input")
+    args = parser.parse_args()
+
+    with open(args.input) as f:
         transmit = [int(l) for l in f]
     Jour09(transmit)

@@ -2,6 +2,7 @@
 
 import sys
 import itertools
+import argparse
 
 def minmaxkey(iterable, key=None):
     if key is None:
@@ -48,7 +49,10 @@ def run(state, l=3):
     return new_state
 
 if __name__=="__main__":
-    with open(sys.argv[1]) as f:
+    parser = argparse.ArgumentParser(description='AoC 2020 - Jour 17')
+    parser.add_argument("input", nargs='?', default="input")
+    args = parser.parse_args()
+    with open(args.input) as f:
         init_state = { (x, y) for x, l in enumerate(f) for y, v in enumerate(l) if v == "#" }
 
     state = { (x, y, 0) for x, y in init_state }

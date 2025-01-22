@@ -2,6 +2,7 @@
 
 in_file=$1
 
+echo "in file '$in_file'"
 # Réécriture des règle en prolog
 cat $in_file | awk -F"[: \"]+" '
   BEGIN{RS="[|\n]"} /^$/{exit}
