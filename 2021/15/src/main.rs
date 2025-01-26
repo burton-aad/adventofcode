@@ -109,5 +109,5 @@ fn main() {
     let erisk = extend_risk(&risk, 5);
     println!("new size {}x{}", erisk.len(), erisk[0].len());
     let (dist, _prec) = dijkstra(&erisk, (0, 0));
-    println!("Part 1 : {}", dist.last().unwrap().last().unwrap());
+    println!("Part 2 : {}", dist.last().unwrap().last().unwrap());
 }

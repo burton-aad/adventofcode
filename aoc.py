@@ -119,7 +119,7 @@ class Rust(Runner):
         subprocess.run(["cargo", "build"], cwd=self.dir)
 
     def run(self):
-        self._run_exec(self.prog)
+        self._run_exec(self.prog, "input")
 
 
 run_formats = {
