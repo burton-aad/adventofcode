@@ -114,6 +114,13 @@ class Go(C):
     def compile(self):
         subprocess.run(["go", "build"], cwd=self.dir)
 
+class Zig(Runner):
+    def compile(self):
+        subprocess.run(["zig", "build-exe", self.prog.name], cwd=self.dir)
+
+    def run(self):
+        self._run_exec(self.prog.with_suffix(''), "input")
+
 class Rust(Runner):
     def __init__(self, prog, *args, **kwargs):
         super().__init__(prog, *args, **kwargs)
@@ -135,6 +142,7 @@ run_formats = {
     ".rs": Rs,
     ".sh": Bash,
     ".go": Go,
+    ".zig": Zig,
 }
 
 def parse_days(year, day):
