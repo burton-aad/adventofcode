@@ -110,6 +110,10 @@ class Rs(C):
         subprocess.run(["rustc", self.prog.relative_to(self.dir).with_suffix('.rs')],
                        cwd=self.dir)
 
+class Go(C):
+    def compile(self):
+        subprocess.run(["go", "build"], cwd=self.dir)
+
 class Rust(Runner):
     def __init__(self, prog, *args, **kwargs):
         super().__init__(prog, *args, **kwargs)
@@ -130,6 +134,7 @@ run_formats = {
     ".el": ELisp,
     ".rs": Rs,
     ".sh": Bash,
+    ".go": Go,
 }
 
 def parse_days(year, day):

@@ -55,4 +55,5 @@ func main() {
 
 	sum := utils.Sum(utils.Map(s, unsnafu))
 	fmt.Println("sum", sum, "->", snafu(sum))
+	fmt.Println("Part 1: ", snafu(sum))
 }
